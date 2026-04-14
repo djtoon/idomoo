@@ -80,16 +80,52 @@ try {
 
 # ── PATH ──────────────────────────────────────────────────────────────────────
 $userPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+$pathDirty = $false
 if ($userPath -notmatch [regex]::Escape($InstallDir)) {
   Info "Adding $InstallDir to your user PATH..."
   $newPath = if ([string]::IsNullOrEmpty($userPath)) { $InstallDir } else { "$userPath;$InstallDir" }
   [Environment]::SetEnvironmentVariable("PATH", $newPath, "User")
-  $env:PATH = "$env:PATH;$InstallDir"
-  Ok "PATH updated. Open a new terminal for changes to take effect."
+  $pathDirty = $true
 } else {
   Ok "PATH already contains $InstallDir."
 }
 
+# Always refresh the CURRENT session's PATH so `idomoo` works without a restart.
+if ($env:PATH -notmatch [regex]::Escape($InstallDir)) {
+  $env:PATH = "$env:PATH;$InstallDir"
+}
+
+# Broadcast WM_SETTINGCHANGE so new processes (Explorer, Task Manager, new
+# terminals) pick up the updated user PATH immediately — without a logoff.
+if ($pathDirty) {
+  try {
+    $sig = @'
+[DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)]
+public static extern IntPtr SendMessageTimeout(
+    IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam,
+    uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);
+'@
+    $winApi = Add-Type -MemberDefinition $sig -Name NativeMethods -Namespace IdomooInstaller -PassThru -ErrorAction SilentlyContinue
+    $HWND_BROADCAST = [IntPtr]0xFFFF
+    $WM_SETTINGCHANGE = 0x001A
+    $SMTO_ABORTIFHUNG = 0x0002
+    $result = [UIntPtr]::Zero
+    [void]$winApi::SendMessageTimeout($HWND_BROADCAST, $WM_SETTINGCHANGE, [UIntPtr]::Zero, "Environment", $SMTO_ABORTIFHUNG, 3000, [ref]$result)
+    Ok "Broadcasted PATH change to running processes."
+  } catch {
+    Warn "Couldn't broadcast PATH change (harmless — new terminals will still pick it up)."
+  }
+}
+
 Write-Host ""
-Ok "Done. Verify with:  idomoo --help"
-Write-Host "    Then run:       idomoo login"
+Ok "Installation complete."
+Write-Host ""
+Write-Host "Try it now (this same PowerShell window):" -ForegroundColor Cyan
+Write-Host "  idomoo --help"
+Write-Host "  idomoo login"
+Write-Host ""
+if ($pathDirty) {
+  Write-Host "If 'idomoo' isn't recognized, close & reopen your terminal," -ForegroundColor DarkGray
+  Write-Host "or run the binary directly:" -ForegroundColor DarkGray
+  Write-Host "  & `"$InstallDir\$BinName`" --help" -ForegroundColor DarkGray
+}

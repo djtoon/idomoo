@@ -344,27 +344,11 @@
       </div>
     </section>
 
-    <!-- 02 — Agent skill -->
+    <!-- 02 — Claude Code plugin -->
     <section>
-      <span class="section-kicker"><span class="n">02</span> · Agent Skill</span>
-      <h2>Add the skill to your AI agent</h2>
-      <p class="section-desc">One command installs the Idomoo skill into Claude Code, Cursor, Copilot, Cline, Windsurf, Zed, Aider, and 18+ other AI agents.</p>
-
-      <div class="codeblock">
-        <div class="codeblock-head">
-          <span class="codeblock-label"><span class="dot"></span> terminal</span>
-          <button class="copy-btn" onclick="copy(this,'npx skills add djtoon/idomoo')">Copy</button>
-        </div>
-        <pre><code><span class="cmd">npx</span> skills add djtoon/idomoo</code></pre>
-      </div>
-      <p class="post-code-note">Powered by <a href="https://skills.sh" style="color:var(--accent-hi);text-decoration:none;">skills.sh</a>. Requires Node.js ≥ 18.</p>
-    </section>
-
-    <!-- 03 — Claude Code plugin -->
-    <section>
-      <span class="section-kicker"><span class="n">03</span> · Claude Code Plugin</span>
+      <span class="section-kicker"><span class="n">02</span> · Claude Code Plugin</span>
       <h2>Install as a Claude Code plugin</h2>
-      <p class="section-desc">Prefer a native Claude Code plugin? Add the marketplace and install from inside your session.</p>
+      <p class="section-desc">Add the Idomoo marketplace and install the plugin from inside your Claude Code session. No Node.js, no npm — pure Claude Code.</p>
 
       <div class="codeblock">
         <div class="codeblock-head">
@@ -377,11 +361,12 @@
 <span class="cmt"># 2. install the plugin</span>
 <span class="kw">/plugin</span> install idomoo@idomoo</code></pre>
       </div>
+      <p class="post-code-note">Claude automatically uses the skill whenever you ask it to generate an AI video or mention Idomoo / Lucas.</p>
     </section>
 
-    <!-- 04 — Have your AI agent do it -->
+    <!-- 03 — Have your AI agent do it -->
     <section>
-      <span class="section-kicker"><span class="n">04</span> · Let your AI do it</span>
+      <span class="section-kicker"><span class="n">03</span> · Let your AI do it</span>
       <h2>Or just send your coding agent here</h2>
       <p class="section-desc">Open Claude Code, Cursor, or any AI coding assistant and paste the message below. It'll read this page, install everything, and start generating videos for you.</p>
 
@@ -394,12 +379,12 @@
             <span class="chat-name">Paste this to your AI coding assistant</span>
           </div>
           <div class="chat-text">
-            Read <code>https://github.com/djtoon/idomoo</code> and install the Idomoo CLI for my OS using the native installer in <code>scripts/install.sh</code> (or <code>scripts/install.ps1</code> on Windows). Then install the agent skill with <code>npx skills add djtoon/idomoo</code>. After that, help me create an AI video with the <code>idomoo</code> CLI.
+            Read <code>https://github.com/djtoon/idomoo</code> and install the Idomoo CLI for my OS using the native installer in <code>scripts/install.sh</code> (macOS/Linux) or <code>scripts/install.ps1</code> (Windows). Then read <code>skills/idomoo/SKILL.md</code> and follow it to help me create an AI video with the <code>idomoo</code> CLI.
           </div>
         </div>
 
         <div class="agent-actions">
-          <button class="btn primary" data-copy-text="Copy prompt" onclick="copy(this,'Read https://github.com/djtoon/idomoo and install the Idomoo CLI for my OS using the native installer in scripts/install.sh (or scripts/install.ps1 on Windows). Then install the agent skill with: npx skills add djtoon/idomoo. After that, help me create an AI video with the idomoo CLI.')">
+          <button class="btn primary" data-copy-text="Copy prompt" onclick="copy(this,'Read https://github.com/djtoon/idomoo and install the Idomoo CLI for my OS using the native installer in scripts/install.sh (macOS/Linux) or scripts/install.ps1 (Windows). Then read skills/idomoo/SKILL.md and follow it to help me create an AI video with the idomoo CLI.')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
             Copy prompt
           </button>
