@@ -7,6 +7,7 @@ TESTING.md
 INSTALLER.md
 HOMEBREW.md
 PUBLISHING.md
+how_to_use.md
 dist/
 *.log
 .DS_Store
