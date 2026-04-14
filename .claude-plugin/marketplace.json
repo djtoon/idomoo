@@ -10,10 +10,7 @@
   "plugins": [
     {
       "name": "idomoo",
-      "source": {
-        "source": "github",
-        "repo": "djtoon/idomoo"
-      },
+      "source": "./plugins/idomoo",
       "description": "AI video generation via the Idomoo / Lucas API. Teaches Claude the brief → blueprint → video workflow using the idomoo CLI.",
       "version": "0.1.0",
       "author": {
