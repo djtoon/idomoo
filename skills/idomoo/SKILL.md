@@ -18,7 +18,34 @@ If the user wants to call the API directly (Python, curl, raw HTTP), this skill 
 
 ## Installation
 
-The CLI is published on npm as `idomoo-cli` and exposes the `idomoo` command:
+The CLI ships as **standalone binaries** (no Node required) and as an **npm package**. Pick whichever matches the user's environment — binary install is preferred when the user doesn't already have Node ≥ 18.
+
+### A. Native install (recommended — no Node needed)
+
+**macOS / Linux / WSL:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/install.sh | bash
+```
+
+Installs to `~/.local/bin/idomoo`. Supports arm64 and x86_64.
+
+**Windows (PowerShell):**
+
+```powershell
+irm https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/install.ps1 | iex
+```
+
+Installs to `%LOCALAPPDATA%\Programs\idomoo\idomoo.exe` and adds it to the user PATH automatically (requires reopening the terminal).
+
+Both installers auto-detect OS + architecture, download the matching binary from GitHub Releases, and verify SHA-256 checksums. Supported targets:
+- `darwin-arm64`, `darwin-x64`
+- `linux-x64`, `linux-arm64`
+- `win-x64`
+
+To pin a version: append `-s -- --version v0.1.1` (bash) or `-Version v0.1.1` (PowerShell).
+
+### B. npm / pnpm / yarn (requires Node ≥ 18)
 
 ```bash
 npm install -g idomoo-cli
@@ -28,13 +55,37 @@ pnpm add -g idomoo-cli
 yarn global add idomoo-cli
 ```
 
-Requires Node.js ≥ 18. After install, verify:
+### C. npx (no install, requires Node ≥ 18)
+
+For one-off use in CI or ad-hoc shells:
+
+```bash
+npx --yes idomoo-cli create -p "..."
+```
+
+### Verify
 
 ```bash
 idomoo --help
 ```
 
-If `idomoo` is "not recognized" / "command not found" after install, the npm global bin directory is not on PATH. Find it with `npm config get prefix` and add the resulting folder (or `<prefix>\` on Windows, `<prefix>/bin` on macOS/Linux) to PATH, then open a new shell.
+### Troubleshooting install
+
+- **`command not found` after binary install on Mac/Linux**: `~/.local/bin` is not on PATH. Add `export PATH="$HOME/.local/bin:$PATH"` to `~/.zshrc` / `~/.bashrc` and reopen the terminal.
+- **`command not found` after npm install**: npm global bin is not on PATH. Find it with `npm config get prefix` — add `<prefix>` (Windows) or `<prefix>/bin` (Mac/Linux) to PATH.
+- **Windows SmartScreen warning**: the binary is unsigned. Click "More info" → "Run anyway". This will be fixed with Authenticode signing in a later release.
+- **macOS "cannot be opened because the developer cannot be verified"**: run `xattr -d com.apple.quarantine ~/.local/bin/idomoo` once, or right-click → Open.
+
+### Uninstall
+
+```bash
+# Native installer
+curl -fsSL https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/uninstall.sh | bash
+# Windows
+irm https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/uninstall.ps1 | iex
+# npm
+npm uninstall -g idomoo-cli
+```
 
 ## First-time setup (login)
 
