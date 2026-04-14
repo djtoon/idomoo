@@ -9,18 +9,18 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #07090d;
-      --bg-panel: #0f131b;
-      --bg-elev: #161b27;
-      --border: #1f2532;
-      --border-hi: #2a3143;
-      --text: #e7eaf0;
-      --text-dim: #8791a3;
-      --text-mute: #555e72;
-      --accent: #6d8cff;
-      --accent-hi: #8da6ff;
-      --accent-soft: #1e2a4d;
-      --success: #49d4a0;
+      --bg: #ffffff;
+      --bg-panel: #f7f9fc;
+      --bg-elev: #eef2f8;
+      --border: #e3e7ee;
+      --border-hi: #c9d1de;
+      --text: #0d1117;
+      --text-dim: #4b5563;
+      --text-mute: #8a94a6;
+      --accent: #3b5bff;
+      --accent-hi: #1e3fe6;
+      --accent-soft: #eaeeff;
+      --success: #16a34a;
       --mono: "SF Mono", "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
     }
 
@@ -32,8 +32,8 @@
       line-height: 1.55;
       -webkit-font-smoothing: antialiased;
       background-image:
-        radial-gradient(ellipse 800px 400px at 50% -100px, rgba(109,140,255,0.15), transparent 70%),
-        radial-gradient(ellipse 600px 300px at 10% 100%, rgba(73,212,160,0.05), transparent 70%);
+        radial-gradient(ellipse 800px 400px at 50% -100px, rgba(59,91,255,0.10), transparent 70%),
+        radial-gradient(ellipse 600px 300px at 10% 100%, rgba(22,163,74,0.05), transparent 70%);
     }
 
     .wrap {
@@ -57,7 +57,7 @@
     .logo-mark svg { width: 16px; height: 16px; fill: #fff; }
 
     .logo-text {
-      font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.01em;
+      font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.01em;
     }
     .logo-text .muted {
       color: var(--text-mute); font-weight: 500;
@@ -79,10 +79,10 @@
     h1 {
       font-size: clamp(32px, 5.5vw, 48px);
       line-height: 1.1; letter-spacing: -0.03em;
-      color: #fff; font-weight: 700; margin-bottom: 18px;
+      color: var(--text); font-weight: 700; margin-bottom: 18px;
     }
     h1 .accent {
-      background: linear-gradient(135deg, #8da6ff 0%, #49d4a0 100%);
+      background: linear-gradient(135deg, #3b5bff 0%, #16a34a 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
     }
@@ -105,7 +105,7 @@
 
     h2 {
       font-size: 24px; font-weight: 650;
-      letter-spacing: -0.02em; color: #fff; margin-bottom: 10px;
+      letter-spacing: -0.02em; color: var(--text); margin-bottom: 10px;
     }
 
     .section-desc {
@@ -131,8 +131,8 @@
     .tab svg { width: 14px; height: 14px; }
     .tab:hover { color: var(--text); }
     .tab.active {
-      background: var(--bg); color: #fff;
-      box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset;
+      background: var(--bg); color: var(--text);
+      box-shadow: 0 1px 2px rgba(13,17,23,0.05);
     }
 
     .tab-panel { display: none; }
@@ -147,7 +147,7 @@
     .codeblock-head {
       display: flex; align-items: center; justify-content: space-between;
       padding: 10px 14px; border-bottom: 1px solid var(--border);
-      background: linear-gradient(to bottom, rgba(255,255,255,0.015), transparent);
+      background: linear-gradient(to bottom, rgba(13,17,23,0.02), transparent);
     }
 
     .codeblock-label {
@@ -178,8 +178,8 @@
 
     .cmt { color: var(--text-mute); }
     .cmd { color: var(--accent-hi); font-weight: 500; }
-    .str { color: #9ee6c5; }
-    .kw  { color: #c9a8ff; }
+    .str { color: #16a34a; }
+    .kw  { color: #7c3aed; }
 
     .post-code-note {
       font-size: 13px; color: var(--text-mute); margin-top: 10px;
@@ -190,7 +190,7 @@
     }
 
     .agent-card {
-      background: linear-gradient(180deg, rgba(109,140,255,0.06), rgba(109,140,255,0) 60%);
+      background: linear-gradient(180deg, rgba(59,91,255,0.05), rgba(59,91,255,0) 60%);
       border: 1px solid var(--border); border-radius: 16px;
       padding: 24px 24px 22px;
     }
@@ -206,7 +206,7 @@
 
     .chat-avatar {
       width: 26px; height: 26px; border-radius: 50%;
-      background: linear-gradient(135deg, #6d8cff, #49d4a0);
+      background: linear-gradient(135deg, #3b5bff, #16a34a);
       display: flex; align-items: center; justify-content: center;
     }
     .chat-avatar svg { width: 13px; height: 13px; stroke: #fff; fill: none; stroke-width: 2; }
@@ -215,7 +215,7 @@
 
     .chat-text { font-size: 14px; line-height: 1.65; color: var(--text); }
     .chat-text code {
-      background: rgba(109,140,255,0.12); color: var(--accent-hi);
+      background: var(--accent-soft); color: var(--accent-hi);
       padding: 1px 6px; border-radius: 4px; font-size: 12.5px;
     }
 
@@ -237,7 +237,7 @@
       background: var(--accent); border-color: var(--accent); color: #fff;
     }
     .btn.primary:hover {
-      background: var(--accent-hi); border-color: var(--accent-hi);
+      background: var(--accent-hi); border-color: var(--accent-hi); color: #fff;
     }
     .btn svg { width: 14px; height: 14px; }
 
