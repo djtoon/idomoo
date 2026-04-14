@@ -344,24 +344,62 @@
       </div>
     </section>
 
-    <!-- 02 — Claude Code plugin -->
+    <!-- 02 — Add the Skill -->
     <section>
-      <span class="section-kicker"><span class="n">02</span> · Claude Code Plugin</span>
-      <h2>Install as a Claude Code plugin</h2>
-      <p class="section-desc">Add the Idomoo marketplace and install the plugin from inside your Claude Code session. No Node.js, no npm — pure Claude Code.</p>
+      <span class="section-kicker"><span class="n">02</span> · Add the Agent Skill</span>
+      <h2>Teach your AI agent Idomoo</h2>
+      <p class="section-desc">The skill teaches Claude, Cursor, and other AI agents how to drive the CLI in plain English. Pick whichever install matches your setup — no Node.js, no npm required.</p>
 
-      <div class="codeblock">
-        <div class="codeblock-head">
-          <span class="codeblock-label"><span class="dot"></span> claude code</span>
-          <button class="copy-btn" onclick="copy(this,'/plugin marketplace add djtoon/idomoo\n/plugin install idomoo@idomoo')">Copy</button>
-        </div>
-        <pre><code><span class="cmt"># 1. register the marketplace</span>
+      <div class="tabs" role="tablist" style="margin-top:4px;">
+        <button class="tab active" data-tab="skill-plugin" role="tab">Claude Code plugin</button>
+        <button class="tab" data-tab="skill-manual-mac" role="tab">Manual (Mac/Linux)</button>
+        <button class="tab" data-tab="skill-manual-win" role="tab">Manual (Windows)</button>
+      </div>
+
+      <!-- Plugin -->
+      <div class="tab-panel active" data-panel="skill-plugin">
+        <div class="codeblock">
+          <div class="codeblock-head">
+            <span class="codeblock-label"><span class="dot"></span> claude code</span>
+            <button class="copy-btn" onclick="copy(this,'/plugin marketplace add djtoon/idomoo\n/plugin install idomoo@idomoo')">Copy</button>
+          </div>
+          <pre><code><span class="cmt"># 1. register the marketplace</span>
 <span class="kw">/plugin</span> marketplace add djtoon/idomoo
 
 <span class="cmt"># 2. install the plugin</span>
 <span class="kw">/plugin</span> install idomoo@idomoo</code></pre>
+        </div>
+        <p class="post-code-note">The fastest path for Claude Code users — marketplace + plugin in two commands. Claude auto-invokes the skill whenever you mention Idomoo or AI video.</p>
       </div>
-      <p class="post-code-note">Claude automatically uses the skill whenever you ask it to generate an AI video or mention Idomoo / Lucas.</p>
+
+      <!-- Manual — Mac/Linux -->
+      <div class="tab-panel" data-panel="skill-manual-mac">
+        <div class="codeblock">
+          <div class="codeblock-head">
+            <span class="codeblock-label"><span class="dot"></span> terminal</span>
+            <button class="copy-btn" onclick="copy(this,'mkdir -p ~/.claude/skills/idomoo && curl -fsSL https://raw.githubusercontent.com/djtoon/idomoo/main/skills/idomoo/SKILL.md -o ~/.claude/skills/idomoo/SKILL.md')">Copy</button>
+          </div>
+          <pre><code><span class="cmd">mkdir</span> -p ~/.claude/skills/idomoo
+<span class="cmd">curl</span> -fsSL https://raw.githubusercontent.com/djtoon/idomoo/main/skills/idomoo/SKILL.md \
+  -o ~/.claude/skills/idomoo/SKILL.md</code></pre>
+        </div>
+        <p class="post-code-note">Drops <code>SKILL.md</code> into Claude Code's user skills directory. Works the same for other agents that read user skills from <code>~/.claude/skills/</code>. Replace the path for agents with different skill dirs (Cursor, Cline, etc).</p>
+      </div>
+
+      <!-- Manual — Windows -->
+      <div class="tab-panel" data-panel="skill-manual-win">
+        <div class="codeblock">
+          <div class="codeblock-head">
+            <span class="codeblock-label"><span class="dot"></span> powershell</span>
+            <button class="copy-btn" onclick="copy(this,'$dir = `&quot;$env:USERPROFILE\\.claude\\skills\\idomoo`&quot;; New-Item -ItemType Directory -Path $dir -Force | Out-Null; irm https://raw.githubusercontent.com/djtoon/idomoo/main/skills/idomoo/SKILL.md -OutFile `&quot;$dir\\SKILL.md`&quot;')">Copy</button>
+          </div>
+          <pre><code><span class="kw">$dir</span> = <span class="str">"$env:USERPROFILE\.claude\skills\idomoo"</span>
+<span class="cmd">New-Item</span> -ItemType Directory -Path <span class="kw">$dir</span> -Force | Out-Null
+<span class="cmd">irm</span> https://raw.githubusercontent.com/djtoon/idomoo/main/skills/idomoo/SKILL.md `
+    -OutFile <span class="str">"$dir\SKILL.md"</span></code></pre>
+        </div>
+        <p class="post-code-note">Installs <code>SKILL.md</code> into <code>%USERPROFILE%\.claude\skills\idomoo\</code>. Restart Claude Code to pick it up.</p>
+      </div>
     </section>
 
     <!-- 03 — Have your AI agent do it -->
