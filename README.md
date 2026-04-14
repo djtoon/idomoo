@@ -3,35 +3,56 @@
 Command-line interface for the [Idomoo AI Video Generation API](https://developers.idomoo.com/) (Lucas). Generate AI videos end-to-end from a single command — login, brief, blueprint, render — with automatic OAuth2 token handling and polling.
 
 ```bash
-npm install -g idomoo-cli
+curl -fsSL https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/install.sh | bash
 idomoo login
 idomoo create -p "Promote our summer sale" -t "Summer Sale"
 ```
+
+👉 Full install page: **https://djtoon.github.io/idomoo/**
 
 ---
 
 ## Install
 
-Requires **Node.js ≥ 18**.
+### Native (recommended — no Node.js required) ⭐
+
+**macOS / Linux / WSL**
+```bash
+curl -fsSL https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/install.sh | bash
+```
+Installs to `~/.local/bin/idomoo`. Supports Apple Silicon, Intel Macs, x86_64 and arm64 Linux.
+
+**Windows (PowerShell)**
+```powershell
+irm https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/install.ps1 | iex
+```
+Installs to `%LOCALAPPDATA%\Programs\idomoo\idomoo.exe` and adds it to your user PATH automatically.
+
+Pin a version with `--version v0.1.1` (bash) or `-Version v0.1.1` (PowerShell).
+
+### npm / pnpm / yarn (requires Node.js ≥ 18)
 
 ```bash
-# npm
 npm install -g idomoo-cli
-
-# pnpm
+# or
 pnpm add -g idomoo-cli
-
-# yarn
+# or
 yarn global add idomoo-cli
 ```
 
-Verify:
+### npx (one-off, requires Node.js ≥ 18)
+
+```bash
+npx --yes idomoo-cli create -p "..."
+```
+
+### Verify
 
 ```bash
 idomoo --help
 ```
 
-> If `idomoo` is "not recognized" / "command not found", the npm global bin directory isn't on PATH. Find it with `npm config get prefix` and add the resulting folder (Windows) or `<prefix>/bin` (macOS/Linux) to PATH.
+> If `idomoo` is "not recognized" / "command not found" after the native install, `~/.local/bin` isn't on PATH — add `export PATH="$HOME/.local/bin:$PATH"` to your shell rc and reopen the terminal. For npm installs, find the global bin with `npm config get prefix`.
 
 ---
 
@@ -262,7 +283,7 @@ The skill teaches the agent the full brief → blueprint → video workflow, all
 ## Links
 
 - **API docs:** https://developers.idomoo.com/
-- **Idomoo Studio:** https://app.idomoo.com
+- **Idomoo Studio:** https://studio.idomoo.com
 - **Agent skill / plugin:** https://github.com/djtoon/idomoo
 - **Issues:** https://github.com/djtoon/idomoo/issues
 
