@@ -1,0 +1,20 @@
+{
+  "name": "idomoo",
+  "metadata": {
+    "description": "Idomoo Claude Code plugins — AI video generation via the Idomoo / Lucas API.",
+    "version": "0.1.0"
+  },
+  "owner": {
+    "name": "Idomoo"
+  },
+  "plugins": [
+    {
+      "name": "idomoo",
+      "source": ".",
+      "description": "Use the Idomoo CLI to generate AI videos from Claude Code. Covers install, login, and the brief → blueprint → video workflow.",
+      "version": "0.1.0",
+      "category": "ai-video",
+      "keywords": ["idomoo", "lucas", "ai-video", "cli"]
+    }
+  ]
+}

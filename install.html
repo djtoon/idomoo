@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Idomoo Agent Skills — Install</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #0a0a0a;
+      color: #e8e8e8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 64px 24px 80px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 680px;
+    }
+
+    /* Logo / brand */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 48px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #6c63ff 0%, #3ecfcf 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: #fff;
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    /* Hero */
+    h1 {
+      font-size: clamp(28px, 5vw, 38px);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      font-size: 17px;
+      line-height: 1.65;
+      color: #888;
+      margin-bottom: 48px;
+      max-width: 560px;
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 44px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #888;
+      margin-bottom: 14px;
+    }
+
+    /* Code block */
+    .code-block {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .code-block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid #1e1e1e;
+    }
+
+    .code-block-label {
+      font-size: 12px;
+      color: #555;
+      font-family: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+    }
+
+    .copy-btn {
+      background: none;
+      border: 1px solid #2a2a2a;
+      border-radius: 5px;
+      color: #555;
+      font-size: 11px;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      font-family: inherit;
+    }
+
+    .copy-btn:hover { color: #ccc; border-color: #444; }
+    .copy-btn.copied { color: #3ecfcf; border-color: #3ecfcf44; }
+
+    pre {
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #e2e2e2;
+      white-space: pre;
+    }
+
+    .comment { color: #555; }
+    .cmd { color: #7dd3fc; }
+    .arg { color: #a5f3fc; }
+    .flag { color: #86efac; }
+
+    /* Or divider */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: "";
+      flex: 1;
+      border-top: 1px solid #222;
+    }
+
+    .or-divider span {
+      font-size: 11px;
+      font-weight: 600;
+      color: #444;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Chat bubble */
+    .chat-bubble {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .chat-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .chat-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6c63ff, #3ecfcf);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .chat-avatar svg {
+      width: 14px;
+      height: 14px;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .chat-text {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: #ccc;
+      flex: 1;
+    }
+
+    .chat-text .gh-url {
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 12.5px;
+      color: #7dd3fc;
+      background: #0d1f2d;
+      padding: 1px 5px;
+      border-radius: 4px;
+      word-break: break-all;
+    }
+
+    .chat-copy {
+      background: none;
+      border: 1px solid #2a2a2a;
+      border-radius: 5px;
+      color: #555;
+      font-size: 11px;
+      padding: 3px 8px;
+      cursor: pointer;
+      font-family: inherit;
+      flex-shrink: 0;
+      transition: color 0.15s, border-color 0.15s;
+      margin-top: 2px;
+    }
+
+    .chat-copy:hover { color: #ccc; border-color: #444; }
+    .chat-copy.copied { color: #3ecfcf; border-color: #3ecfcf44; }
+
+    .github-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #555;
+      text-decoration: none;
+      border: 1px solid #222;
+      border-radius: 6px;
+      padding: 4px 10px;
+      margin-top: 10px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .github-link:hover { border-color: #444; color: #ccc; }
+
+    .github-link svg {
+      width: 13px;
+      height: 13px;
+      fill: currentColor;
+    }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid #1e1e1e;
+      margin: 44px 0;
+    }
+
+    /* Agents grid */
+    .agents-label {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 14px;
+    }
+
+    .agents-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .agent-tag {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 20px;
+      padding: 5px 13px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    /* Footer note */
+    .note {
+      display: flex;
+      gap: 10px;
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 8px;
+    }
+
+    .note-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+    .note p {
+      font-size: 14px;
+      color: #666;
+      margin: 0;
+    }
+
+    .note a {
+      color: #7dd3fc;
+      text-decoration: none;
+    }
+
+    .note a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 3l14 9-14 9V3z"/>
+        </svg>
+      </div>
+      <span class="brand-name">Idomoo Agent Skills</span>
+    </div>
+
+    <!-- Hero -->
+    <h1>Give your AI agent the power to create videos.</h1>
+    <p class="subtitle">
+      Idomoo Agent Skills give AI agents the context and instructions they need to generate AI videos
+      using the <strong style="color:#ccc;">Idomoo CLI</strong> — covering login, brief creation,
+      blueprints, rendering, and troubleshooting — all on demand.
+    </p>
+
+    <!-- Install via skills CLI -->
+    <div class="section">
+      <div class="section-label">Skills CLI</div>
+      <h2>Install with npx</h2>
+      <p>Add the Idomoo skill to any supported agent using the skills CLI:</p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-label">terminal</span>
+          <button class="copy-btn" onclick="copyCode(this, 'npx skills add djtoon/idomoo')">Copy</button>
+        </div>
+        <pre><code><span class="cmd">npx</span> <span class="arg">skills add</span> djtoon/idomoo</code></pre>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Claude Code plugin -->
+    <div class="section">
+      <div class="section-label">Claude Code</div>
+      <h2>Install as a Claude Code plugin</h2>
+      <p>Add the marketplace and install the plugin from inside Claude Code:</p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-label">claude code</span>
+          <button class="copy-btn" onclick="copyCode(this, '/plugin marketplace add djtoon/idomoo\n/plugin install idomoo@idomoo')">Copy</button>
+        </div>
+        <pre><code><span class="comment"># Step 1 — register the marketplace</span>
+<span class="cmd">/plugin marketplace add</span> djtoon/idomoo
+
+<span class="comment"># Step 2 — install the plugin</span>
+<span class="cmd">/plugin install</span> idomoo@idomoo</code></pre>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Ask your assistant -->
+    <div class="section">
+      <div class="section-label">Coding Assistant</div>
+      <h2>Or just ask your assistant</h2>
+      <p>Paste the link below and ask your coding assistant to install it for you:</p>
+
+      <div class="chat-bubble">
+        <div class="chat-row">
+          <div class="chat-avatar">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <div class="chat-text">
+            Install the Idomoo agent skill from this GitHub repo:
+            <br /><br />
+            <span class="gh-url">https://github.com/djtoon/idomoo</span>
+            <br /><br />
+            Run <code style="background:#1a1a1a;padding:2px 5px;border-radius:4px;font-size:12px;">npx skills add djtoon/idomoo</code> to set it up.
+          </div>
+          <button class="chat-copy" onclick="copyCode(this, 'Install the Idomoo agent skill from this GitHub repo:\n\nhttps://github.com/djtoon/idomoo\n\nRun: npx skills add djtoon/idomoo')">Copy</button>
+        </div>
+      </div>
+
+      <a class="github-link" href="https://github.com/djtoon/idomoo" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        View on GitHub
+      </a>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Included skill -->
+    <div class="section">
+      <div class="section-label">Included skill</div>
+      <h2>idomoo</h2>
+      <p>
+        Teaches your agent how to use the <code style="background:#1a1a1a;padding:2px 6px;border-radius:4px;font-size:13px;">idomoo</code> CLI end-to-end:
+        installing the npm package, authenticating with OAuth2, and running the
+        <strong style="color:#ccc;">brief → blueprint → ai-video</strong> pipeline.
+        Includes all flags, status values, polling behaviour, and troubleshooting steps.
+      </p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Prerequisites -->
+    <div class="section">
+      <div class="section-label">Before you start</div>
+      <h2>Prerequisites</h2>
+      <p>Install the Idomoo CLI once before your agent uses it:</p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-label">terminal</span>
+          <button class="copy-btn" onclick="copyCode(this, 'npm install -g idomoo-cli\nidomoo login')">Copy</button>
+        </div>
+        <pre><code><span class="cmd">npm</span> <span class="arg">install</span> <span class="flag">-g</span> idomoo-cli
+
+<span class="comment"># Authenticate once — prompts for Account ID and API Secret Key</span>
+<span class="cmd">idomoo</span> <span class="arg">login</span></code></pre>
+      </div>
+
+      <div class="note">
+        <span class="note-icon">ℹ</span>
+        <p>Requires Node.js ≥ 18. Your Account ID and API Secret Key are available in the
+          <a href="https://app.idomoo.com" target="_blank" rel="noopener">Idomoo dashboard</a>.
+          Credentials are cached at <code style="font-family:monospace;font-size:12px;">~/.idomoo/config.json</code>.</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Compatible agents -->
+    <div class="section">
+      <p class="agents-label">Works with 18+ AI agents including:</p>
+      <div class="agents-grid">
+        <span class="agent-tag">Claude Code</span>
+        <span class="agent-tag">GitHub Copilot</span>
+        <span class="agent-tag">Cursor</span>
+        <span class="agent-tag">Cline</span>
+        <span class="agent-tag">Windsurf</span>
+        <span class="agent-tag">Zed</span>
+        <span class="agent-tag">Continue</span>
+        <span class="agent-tag">Aider</span>
+        <span class="agent-tag">Amp</span>
+        <span class="agent-tag">Goose</span>
+        <span class="agent-tag">Codex</span>
+        <span class="agent-tag">+ more</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function copyCode(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

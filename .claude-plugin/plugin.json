@@ -1,0 +1,17 @@
+{
+  "name": "idomoo",
+  "description": "Claude Code plugin that teaches Claude how to use the Idomoo AI Video Generation CLI (Lucas) to create, manage, and render AI videos end-to-end.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Idomoo"
+  },
+  "homepage": "https://developers.idomoo.com/",
+  "keywords": [
+    "idomoo",
+    "lucas",
+    "ai-video",
+    "video-generation",
+    "cli"
+  ],
+  "license": "MIT"
+}

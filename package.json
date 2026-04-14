@@ -1,0 +1,37 @@
+{
+  "name": "idomoo-cli",
+  "version": "0.1.2",
+  "description": "Command-line tool for the Idomoo AI Video Generation API (Lucas).",
+  "bin": {
+    "idomoo": "bin/idomoo.js"
+  },
+  "type": "commonjs",
+  "main": "src/cli.js",
+  "files": [
+    "bin",
+    "src",
+    "skills"
+  ],
+  "scripts": {
+    "start": "node bin/idomoo.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "keywords": [
+    "idomoo",
+    "lucas",
+    "ai-video",
+    "cli"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.1.0",
+    "idomoo-cli": "^0.1.1"
+  }
+}

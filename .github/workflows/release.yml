@@ -1,0 +1,81 @@
+# Builds standalone idomoo binaries for macOS, Linux, and Windows on every
+# tag push (e.g. `git tag v0.1.1 && git push --tags`) and uploads them to a
+# GitHub Release together with checksums.txt.
+#
+# Bun cross-compiles all targets from a single Linux runner (since v1.1.5),
+# so this workflow only needs one job.
+
+name: Release binaries
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g. v0.1.1)'
+        required: true
+
+permissions:
+  contents: write   # required to create releases
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build all targets
+        run: |
+          mkdir -p dist
+          ENTRY=bin/idomoo.js
+
+          # Bun supports cross-compilation to all these targets from Linux.
+          bun build "$ENTRY" --compile --minify --sourcemap=none \
+            --target=bun-darwin-arm64  --outfile dist/idomoo-darwin-arm64
+          bun build "$ENTRY" --compile --minify --sourcemap=none \
+            --target=bun-darwin-x64    --outfile dist/idomoo-darwin-x64
+          bun build "$ENTRY" --compile --minify --sourcemap=none \
+            --target=bun-linux-x64     --outfile dist/idomoo-linux-x64
+          bun build "$ENTRY" --compile --minify --sourcemap=none \
+            --target=bun-linux-arm64   --outfile dist/idomoo-linux-arm64
+          bun build "$ENTRY" --compile --minify --sourcemap=none \
+            --target=bun-windows-x64   --outfile dist/idomoo-win-x64.exe
+
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum * > checksums.txt
+          cat checksums.txt
+
+      - name: Resolve tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: ${{ steps.tag.outputs.tag }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            dist/idomoo-darwin-arm64
+            dist/idomoo-darwin-x64
+            dist/idomoo-linux-x64
+            dist/idomoo-linux-arm64
+            dist/idomoo-win-x64.exe
+            dist/checksums.txt
