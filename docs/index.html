@@ -348,16 +348,29 @@
     <section>
       <span class="section-kicker"><span class="n">02</span> · Add the Agent Skill</span>
       <h2>Teach your AI agent Idomoo</h2>
-      <p class="section-desc">The skill teaches Claude, Cursor, and other AI agents how to drive the CLI in plain English. Pick whichever install matches your setup — no Node.js, no npm required.</p>
+      <p class="section-desc">The skill teaches Claude, Cursor, and other AI agents how to drive the CLI in plain English. Pick whichever install matches your setup.</p>
 
       <div class="tabs" role="tablist" style="margin-top:4px;">
-        <button class="tab active" data-tab="skill-plugin" role="tab">Claude Code plugin</button>
+        <button class="tab active" data-tab="skill-npx" role="tab">skills CLI</button>
+        <button class="tab" data-tab="skill-plugin" role="tab">Claude Code plugin</button>
         <button class="tab" data-tab="skill-manual-mac" role="tab">Manual (Mac/Linux)</button>
         <button class="tab" data-tab="skill-manual-win" role="tab">Manual (Windows)</button>
       </div>
 
+      <!-- skills CLI (npx) -->
+      <div class="tab-panel active" data-panel="skill-npx">
+        <div class="codeblock">
+          <div class="codeblock-head">
+            <span class="codeblock-label"><span class="dot"></span> terminal</span>
+            <button class="copy-btn" onclick="copy(this,'npx skills add djtoon/idomoo')">Copy</button>
+          </div>
+          <pre><code><span class="cmd">npx</span> skills add djtoon/idomoo</code></pre>
+        </div>
+        <p class="post-code-note">Powered by <a href="https://skills.sh" style="color:var(--accent-hi);text-decoration:none;">skills.sh</a> — works across Claude Code, Cursor, GitHub Copilot, Cline, Windsurf, Zed, Aider, and 18+ other AI agents. Requires Node.js ≥ 18.</p>
+      </div>
+
       <!-- Plugin -->
-      <div class="tab-panel active" data-panel="skill-plugin">
+      <div class="tab-panel" data-panel="skill-plugin">
         <div class="codeblock">
           <div class="codeblock-head">
             <span class="codeblock-label"><span class="dot"></span> claude code</span>
