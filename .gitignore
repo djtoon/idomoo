@@ -1,5 +1,12 @@
 node_modules/
 .claude/
+
+# Maintainer-only docs (kept locally, not shipped)
+HOSTING.md
+TESTING.md
+INSTALLER.md
+HOMEBREW.md
+PUBLISHING.md
 dist/
 *.log
 .DS_Store
