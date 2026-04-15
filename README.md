@@ -14,7 +14,9 @@ Three ways to use the Idomoo AI Video Generation API (Lucas) from anywhere:
 
 ### Option A — Lucas MCP (Claude Desktop / Cursor / Claude Code)
 
-Add this as a custom MCP connector in your client:
+**Claude Desktop (one-click):** download [`idomoo.mcpb`](https://github.com/djtoon/idomoo/releases/latest/download/idomoo.mcpb) and double-click. Paste your Lucas MCP Key when prompted — done.
+
+**Other clients (manual):** add as a custom MCP connector:
 - **URL:** `https://lucas-mcp.idomoo.ai/mcp`
 - **Header:** `X-Lucas-MCP-Key: <your_mcp_key>` (request it from Idomoo support)
 

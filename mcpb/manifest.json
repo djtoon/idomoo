@@ -1,0 +1,60 @@
+{
+  "manifest_version": "0.3",
+  "name": "idomoo",
+  "display_name": "Idomoo Lucas MCP",
+  "version": "0.3.1",
+  "description": "Proxy to the hosted Idomoo Lucas MCP server. Create AI videos end-to-end (brief → blueprint → video) from Claude Desktop.",
+  "long_description": "Thin Node.js stdio proxy that forwards MCP traffic to Idomoo's hosted Lucas MCP server at https://lucas-mcp.idomoo.ai/mcp. Exposes the 6 official Lucas tools: create_brief, get_brief, create_blueprint, get_blueprint, create_video, get_video.",
+  "author": {
+    "name": "Idomoo",
+    "url": "https://idomoo.com"
+  },
+  "homepage": "https://github.com/djtoon/idomoo",
+  "documentation": "https://academy.idomoo.com/support/solutions/articles/4000227306-lucas-mcp-server-integration-guide",
+  "license": "MIT",
+  "keywords": ["idomoo", "lucas", "ai-video", "video-generation"],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "LUCAS_MCP_URL": "${user_config.server_url}",
+        "LUCAS_MCP_KEY": "${user_config.lucas_mcp_key}"
+      }
+    }
+  },
+  "tools": [
+    { "name": "create_brief", "description": "Create a video brief from a natural-language prompt" },
+    { "name": "get_brief", "description": "Fetch a brief by ID — used to poll status" },
+    { "name": "create_blueprint", "description": "Generate a scene blueprint from a brief" },
+    { "name": "get_blueprint", "description": "Fetch a blueprint by ID — used to poll status" },
+    { "name": "create_video", "description": "Render the final AI video from a blueprint" },
+    { "name": "get_video", "description": "Fetch the AI video — video_url populates when Done" }
+  ],
+  "tools_generated": false,
+  "user_config": {
+    "lucas_mcp_key": {
+      "type": "string",
+      "title": "Lucas MCP Key",
+      "description": "Your X-Lucas-MCP-Key (get it from https://studio.idomoo.com under API settings).",
+      "sensitive": true,
+      "required": true
+    },
+    "server_url": {
+      "type": "string",
+      "title": "Lucas MCP Server URL",
+      "description": "Override the hosted Lucas MCP endpoint. Leave as default unless instructed.",
+      "required": false,
+      "default": "https://lucas-mcp.idomoo.ai/mcp"
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  }
+}

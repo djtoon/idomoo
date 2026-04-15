@@ -1,0 +1,18 @@
+{
+  "name": "idomoo-mcpb",
+  "version": "0.3.1",
+  "description": "MCPB proxy to the hosted Idomoo Lucas MCP server.",
+  "type": "module",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "pack": "npm install --omit=dev && mcpb pack ."
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.0"
+  },
+  "license": "MIT"
+}

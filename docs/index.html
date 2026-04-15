@@ -380,12 +380,34 @@
       </div>
 
       <div class="tab-panel active" data-panel="mcp-claude-desktop">
-        <div class="codeblock">
-          <div class="codeblock-head">
-            <span class="codeblock-label"><span class="dot"></span> Settings → Connectors → Add custom connector</span>
-            <button class="copy-btn" onclick='copy(this,JSON.stringify({"mcpServers":{"lucas":{"url":"https://lucas-mcp.idomoo.ai/mcp","headers":{"X-Lucas-MCP-Key":"your_mcp_key"}}}},null,2))'>Copy JSON</button>
+        <div style="padding:18px 20px; background:var(--bg-panel); border:1px solid var(--border); border-radius:12px; margin-bottom:14px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.14em; color:var(--accent); text-transform:uppercase;">Recommended · one-click</span>
           </div>
-          <pre><code>{
+          <p style="font-size:14px; color:var(--text-dim); line-height:1.6; margin-bottom:14px;">
+            Download the Claude Desktop Extension (<code>.mcpb</code>) and double-click it. Claude Desktop prompts for your <code>X-Lucas-MCP-Key</code> and wires up all 6 Lucas tools automatically — no JSON, no paths.
+          </p>
+          <div class="agent-actions">
+            <a class="btn primary" href="https://github.com/djtoon/idomoo/releases/latest/download/idomoo.mcpb" download="idomoo.mcpb">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download idomoo.mcpb
+            </a>
+            <a class="btn" href="https://github.com/djtoon/idomoo/tree/main/mcpb" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              View source
+            </a>
+          </div>
+          <p class="post-code-note" style="margin-top:12px;">Double-click <code>idomoo.mcpb</code>. Claude Desktop ≥ 0.10 will open the install dialog, ask for your Lucas MCP Key, and enable the tools.</p>
+        </div>
+
+        <details style="margin-top:4px;">
+          <summary style="cursor:pointer; font-size:13px; color:var(--text-dim); padding:8px 0;">Or set it up manually (JSON connector)</summary>
+          <div class="codeblock" style="margin-top:10px;">
+            <div class="codeblock-head">
+              <span class="codeblock-label"><span class="dot"></span> Settings → Connectors → Add custom connector</span>
+              <button class="copy-btn" onclick='copy(this,JSON.stringify({"mcpServers":{"lucas":{"url":"https://lucas-mcp.idomoo.ai/mcp","headers":{"X-Lucas-MCP-Key":"your_mcp_key"}}}},null,2))'>Copy JSON</button>
+            </div>
+            <pre><code>{
   <span class="str">"mcpServers"</span>: {
     <span class="str">"lucas"</span>: {
       <span class="str">"url"</span>: <span class="str">"https://lucas-mcp.idomoo.ai/mcp"</span>,
@@ -395,8 +417,9 @@
     }
   }
 }</code></pre>
-        </div>
-        <p class="post-code-note">Open <strong>Claude Desktop → Settings → Connectors → Add custom connector</strong>, paste the URL above, and add the <code>X-Lucas-MCP-Key</code> header.</p>
+          </div>
+          <p class="post-code-note">Open <strong>Claude Desktop → Settings → Connectors → Add custom connector</strong>, paste the URL above, and add the <code>X-Lucas-MCP-Key</code> header.</p>
+        </details>
       </div>
 
       <div class="tab-panel" data-panel="mcp-claude-code">

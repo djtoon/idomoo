@@ -1,0 +1,9 @@
+.git
+.gitignore
+*.mcpb
+*.log
+.DS_Store
+.env
+.env.*
+tests/
+test/

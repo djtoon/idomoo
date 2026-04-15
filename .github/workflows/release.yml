@@ -30,6 +30,11 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Setup Node (for MCPB pack)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Install dependencies
         run: bun install
 
@@ -49,6 +54,16 @@ jobs:
             --target=bun-linux-arm64   --outfile dist/idomoo-linux-arm64
           bun build "$ENTRY" --compile --minify --sourcemap=none \
             --target=bun-windows-x64   --outfile dist/idomoo-win-x64.exe
+
+      - name: Build MCPB bundle
+        run: |
+          cd mcpb
+          npm install --omit=dev
+          npx --yes @anthropic-ai/mcpb pack .
+          # mcpb pack writes <folder>.mcpb next to the manifest — normalize the
+          # filename so release consumers can always grab idomoo.mcpb.
+          ARTIFACT=$(ls *.mcpb | head -n1)
+          mv "$ARTIFACT" ../dist/idomoo.mcpb
 
       - name: Generate checksums
         run: |
@@ -78,4 +93,5 @@ jobs:
             dist/idomoo-linux-x64
             dist/idomoo-linux-arm64
             dist/idomoo-win-x64.exe
+            dist/idomoo.mcpb
             dist/checksums.txt

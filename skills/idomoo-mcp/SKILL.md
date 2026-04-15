@@ -1,17 +1,23 @@
 ---
 name: idomoo-mcp
-description: Use this skill to generate AI videos with the official Lucas MCP server hosted by Idomoo (https://lucas-mcp.idomoo.ai/mcp). Trigger when the user asks to create AI videos, mentions Idomoo or Lucas, or wants to manage briefs / blueprints / videos through MCP tools. Implements an interactive brief → blueprint → video flow with user review at every step.
+description: Use this skill to generate AI videos via the Idomoo Lucas MCP server. Trigger when the user asks to create, edit, or manage AI videos, mentions Idomoo or Lucas (Idomoo's AI video creator), or wants to work with briefs / blueprints / videos through MCP tools. Implements an interactive brief → blueprint → video flow with user review between each step.
 ---
 
-# Idomoo Lucas MCP — Skill
+# idomoo (MCP edition)
 
-This skill drives the **official Lucas MCP server** hosted by Idomoo at `https://lucas-mcp.idomoo.ai/mcp`. You call MCP tools directly by name — there is no shell or CLI involved.
+This skill drives the Idomoo Lucas MCP server that is **already connected** via this MCPB extension. You call MCP tools directly by name — no shell, no CLI. The bundle proxies to `https://lucas-mcp.idomoo.ai/mcp`; tool names and behavior match the official Lucas MCP spec.
 
 > **Setup reference:** https://academy.idomoo.com/support/solutions/articles/4000227306-lucas-mcp-server-integration-guide
 
+## When to use this skill
+
+- The user wants to generate an AI video and this MCPB is installed.
+- The user mentions "Idomoo" or "Lucas".
+- The user asks about briefs, blueprints, or AI videos.
+
 ---
 
-## Tools available (6 total, exposed by the Lucas MCP server)
+## Tools available (6 total)
 
 | Tool | Purpose | Required params |
 | --- | --- | --- |
@@ -20,87 +26,111 @@ This skill drives the **official Lucas MCP server** hosted by Idomoo at `https:/
 | `create_blueprint` | Generate a scene blueprint from a brief | `brief_id`; optional `duration` (15–900s) |
 | `get_blueprint` | Fetch a blueprint by ID — used to poll status | `blueprint_id` |
 | `create_video` | Render the final AI video from a blueprint | `blueprint_id` |
-| `get_video` | Fetch the AI video by ID — `video_url` populates when status is `Done` | `ai_video_id` |
+| `get_video` | Fetch the AI video — `video_url` populates when status is `Done` | `ai_video_id` |
 
-If a tool returns `status: In process` or `Waiting for a file`, **poll** the matching `get_*` tool every ~4 seconds until `status: Done` or `status: Error`. There is no built-in `wait` flag — polling is your responsibility.
+None of the `create_*` tools block until `Done`. After each one, **poll** the matching `get_*` tool every ~4 seconds until `status: Done` or `status: Error`.
 
 ---
 
 ## 🎬 Interactive video creation flow
 
-**Default to this flow** unless the user explicitly asks for a one-shot. Stop and show results after every `create_*` call so the user can review before moving on.
+**This is the primary way to use the skill.** Walk the user through each step and pause for confirmation at every gate. Only skip approvals if the user explicitly says "just make it" or "one-shot".
 
-### Step 1 — Gather brief info
+### Step 1 — Pick a brand (optional)
+
+Ask the user: *"Which brand should this video use? I can use an existing brand ID, or we can skip branding for this one."*
+
+- **Existing brand:** have the user paste the `brand_id` from https://studio.idomoo.com.
+- **New brand:** Lucas MCP does **not** expose brand creation. Send the user to https://studio.idomoo.com to create one, or to the `idomoo` CLI (`idomoo brand create ...`) if they have it installed. Do not pretend you can create brands from here.
+- **No brand:** skip and continue without `brand_id`.
+
+### Step 2 — Gather brief information
 
 Ask the user for:
-- **prompt** (required) — one-paragraph description of the video
-- **brand_id** (optional) — if they have an existing Idomoo brand they want to use
-- **duration** (optional) — target length in seconds (Lucas defaults to 30, valid range 15–900)
+- **prompt** (required) — one-paragraph description of what the video is about
+- **brand_id** (optional) — from Step 1
+- **duration** (optional) — target length in seconds, 15–900 (Lucas defaults to 30)
 
-If the user mentions branding but doesn't have a `brand_id`, point them at https://studio.idomoo.com to create one — the Lucas MCP doesn't expose brand creation.
+If the user has a **title**, **audience**, or **script** in mind, roll them into the `prompt` — Lucas parses the prompt to derive those fields. (The MCP `create_brief` tool only accepts `prompt` + optional `brand_id`, unlike the CLI which takes them as separate flags.)
 
-### Step 2 — Create the brief
+### Step 3 — Create the brief and poll until Done
 
-Call `create_brief` with the gathered fields. The response has an `id` (the `brief_id`) and an initial `status`.
+Call `create_brief` with the prompt (and `brand_id` if set). The response has `id` (the `brief_id`) and an initial `status`.
 
-If `status` is not `Done`, **poll** `get_brief` with that `brief_id` every ~4 seconds. Stop polling when:
+If `status` is not `Done`, poll `get_brief` with that `brief_id` every ~4 seconds. Stop when:
 - `status: Done` → continue
-- `status: Error` → surface `status_message` to the user, do NOT proceed
-- 10 minutes elapsed → tell the user it's still processing and offer to keep checking
+- `status: Error` → surface `status_message` to the user verbatim, do **not** proceed
+- ~10 minutes elapsed → tell the user it's still processing and ask whether to keep polling
 
-### Step 3 — Show the brief and ask for confirmation
+### Step 4 — Show the brief and get approval
 
-Once the brief is `Done`, **show the full JSON to the user** including:
+Once the brief is `Done`, **show the full JSON to the user**, highlighting:
 - `audience_name` / `audience_description`
 - `script` and/or `main_messages`
 - `tone`, `narrator_style`, `call_to_action`
 - `custom_instructions`
 
-Ask: *"Does the brief look right? If you want changes, tell me what to adjust and I'll create a new brief."*
+Ask: *"Does the brief look right? If you want changes, tell me what to adjust and I'll regenerate it."*
 
-> ⚠️ The Lucas MCP **does not expose `edit_brief` or `patch_brief`**. To change a brief, call `create_brief` again with an adjusted prompt — Lucas will produce a fresh brief. Don't pretend you can edit in place.
+> ⚠️ **No edit tool.** Lucas MCP does not expose `edit_brief` / `patch_brief`. To change a brief, call `create_brief` again with an adjusted prompt — Lucas will produce a fresh brief. Be transparent: *"I'll regenerate the brief with that change"* — never pretend you can edit in place. Loop this step until the user approves.
 
-### Step 4 — Create the blueprint
+### Step 5 — Create the blueprint and poll until Done
 
-Once the brief is approved, call `create_blueprint` with `brief_id` and optional `duration`. Poll `get_blueprint` until `status: Done`.
+Once the brief is approved, call `create_blueprint` with the `brief_id` and optional `duration`. Poll `get_blueprint` with the returned `blueprint_id` every ~4 seconds until `Done` or `Error`.
 
-### Step 5 — Show the blueprint and ask for confirmation
+### Step 6 — Show the blueprint and get approval
 
-Show the user the blueprint structure (scenes, narration, transitions). Ask: *"Look good? If you want changes, tell me what to adjust and I'll regenerate."*
+Show the user the blueprint structure — scenes, per-scene narration, transitions, pacing. Ask: *"Look good? If you want changes, tell me what to adjust and I'll regenerate."*
 
-> ⚠️ The Lucas MCP **does not expose `edit_blueprint`**. To change a blueprint, call `create_blueprint` again — typically with a tweaked brief if the issue is content-level, or a different `duration` if it's pacing.
+> ⚠️ **No edit tool.** As with briefs, there's no `edit_blueprint`. To change a blueprint, call `create_blueprint` again — typically with a tweaked brief (regenerate brief first) if the issue is content-level, or with a different `duration` if it's pacing. Loop until approved.
 
-### Step 6 — Render the final video
+### Step 7 — Render the final video
 
-Once the blueprint is approved, call `create_video` with `blueprint_id`. Poll `get_video` until `status: Done`. The response then includes `video_url`. Present that URL to the user.
+When the blueprint is approved, call `create_video` with `blueprint_id`. Poll `get_video` with the returned `ai_video_id` every ~4 seconds until `Done`. The final response will include `video_url` — present that URL to the user.
 
 ---
 
-## Status values
+## ⏩ One-shot end-to-end (only when explicitly requested)
 
-Brief, blueprint, and video resources all expose a `status` field:
+If the user says *"just make it"* or *"don't ask me, I trust you"*, chain the calls without pausing for approvals:
+
+1. `create_brief` → poll `get_brief` until `Done`
+2. `create_blueprint` → poll `get_blueprint` until `Done`
+3. `create_video` → poll `get_video` until `Done`
+4. Return the `video_url`
+
+Still surface errors (`status_message`) verbatim — don't retry blindly.
+
+---
+
+## Status values & polling
+
+All three resources (brief, blueprint, ai-video) expose a `status` field:
 
 - `Waiting for a file` — pending external input
 - `In process` — actively processing
-- `Done` — ready (final `video_url` populated for videos)
-- `Error` — failed; read `status_message` and surface it to the user
+- `Done` — ready (for videos, `video_url` is populated)
+- `Error` — failed; read `status_message` and surface it to the user verbatim
+
+**Polling cadence:** every ~4 seconds, up to ~10 minutes before asking the user whether to keep waiting.
 
 ---
 
-## Rules for Claude
+## Rules for the agent
 
-1. **Default to the interactive flow** above — show JSON, get approval, then move on. Only skip approvals when the user explicitly says "just make it" or "one-shot".
-2. **Always poll after `create_*`.** None of the Lucas MCP tools block until `Done`; you must call the matching `get_*` repeatedly.
-3. **Don't invent edit tools.** Lucas MCP only has 6 tools (above). To change a brief/blueprint, regenerate it — don't call a non-existent `edit_*` or `patch_*` tool.
-4. **Remember IDs** as you go — `brief_id` feeds into `create_blueprint`; `blueprint_id` feeds into `create_video`; `ai_video_id` feeds into `get_video`.
-5. **On error responses**, read `status_message` and tell the user verbatim. Don't retry blindly — errors are usually configuration issues (invalid `brand_id`, unsupported prompt, etc.).
-6. **Never log auth headers.** The user's `X-Lucas-MCP-Key` is configured at the MCP-client level (Claude Desktop / Cursor / Claude Code) and never appears in tool inputs or outputs.
+1. **Default to the interactive flow** (brief → review → blueprint → review → video). Only skip approvals on explicit "one-shot" instruction.
+2. **Always pause and show JSON** after `create_brief` and `create_blueprint`. Ask for approval before moving on.
+3. **Always poll after a `create_*` call.** None of them block until `Done`.
+4. **Never invent edit tools.** There are only 6 tools listed above. To change a brief or blueprint, regenerate. Tell the user that's what you're doing.
+5. **On errors,** read `status_message` and surface it verbatim. Don't retry blindly — errors are usually invalid `brand_id`, unsupported prompt, or missing brand assets.
+6. **Never log auth headers.** The `X-Lucas-MCP-Key` is configured at the MCPB level and never appears in tool inputs or outputs.
+7. **Remember IDs as you go:** `brief_id` → `create_blueprint`; `blueprint_id` → `create_video`; `ai_video_id` → `get_video`.
 
 ---
 
 ## Endpoints not exposed via Lucas MCP
 
-If the user asks for things outside the 6 tools above (brand creation, knowledge bases, audio, avatars, Getty media, presenters, video saving to workspace, etc.), tell them:
+If the user asks for something outside the 6 tools above (brand creation/management, knowledge bases, audio/voices, avatars, presenters, Getty media, music, video translation, save-to-workspace, etc.), tell them:
 
-- For **brand creation / management**: use https://studio.idomoo.com or the [`idomoo-cli`](https://github.com/djtoon/idomoo) which wraps additional endpoints.
-- For **other endpoints**: the underlying REST API has them but the MCP server doesn't surface them yet. Direct REST calls or the CLI are the workarounds.
+- For **brand creation/management:** https://studio.idomoo.com, or the [`idomoo`](https://github.com/djtoon/idomoo) CLI which wraps the full REST API.
+- For **other endpoints:** the underlying REST API has them but the MCP server doesn't surface them yet — direct REST or the CLI are the workarounds.
