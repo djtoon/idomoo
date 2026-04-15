@@ -53,4 +53,11 @@ async function brandUpdate(id, opts) {
   return res;
 }
 
-module.exports = { brandCreate, brandGet, brandUpdate, buildBrandPayload };
+async function brandList(opts = {}) {
+  const client = new IdomooClient();
+  const res = await client.searchBrands(opts.name || '');
+  console.log(JSON.stringify(res, null, 2));
+  return res;
+}
+
+module.exports = { brandCreate, brandGet, brandUpdate, brandList, buildBrandPayload };

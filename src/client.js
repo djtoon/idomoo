@@ -128,6 +128,14 @@ class IdomooClient {
   getBrief(id) {
     return this.request('GET', `/brief/${encodeURIComponent(id)}`);
   }
+  patchBrief(id, payload) {
+    return this.request('PATCH', `/brief/${encodeURIComponent(id)}`, { body: payload });
+  }
+  updateBriefByPrompt(briefId, userPrompt) {
+    return this.request('POST', '/brief/update', {
+      body: { brief_id: briefId, user_prompt: userPrompt },
+    });
+  }
 
   // ---- Blueprint ----
   createBlueprint(payload) {
@@ -136,6 +144,9 @@ class IdomooClient {
   getBlueprint(id) {
     return this.request('GET', `/blueprint/${encodeURIComponent(id)}`);
   }
+  updateBlueprintByPrompt(id, prompt) {
+    return this.request('POST', `/blueprint/${encodeURIComponent(id)}`, { body: { prompt } });
+  }
 
   // ---- AI Video ----
   createAiVideo(payload) {
@@ -143,6 +154,9 @@ class IdomooClient {
   }
   getAiVideo(id) {
     return this.request('GET', `/ai-video/${encodeURIComponent(id)}`);
+  }
+  saveAiVideo(payload) {
+    return this.request('POST', '/ai-video/save', { body: payload });
   }
 
   // ---- Brand ----
@@ -154,6 +168,11 @@ class IdomooClient {
   }
   updateBrand(id, payload) {
     return this.request('PUT', `/brands/${encodeURIComponent(id)}`, { body: payload });
+  }
+  // Note: /brands/search is marked x-internal in the schema but is the only
+  // endpoint that enumerates brands. Exposed here so the CLI can list brands.
+  searchBrands(name = '') {
+    return this.request('POST', '/brands/search', { body: { name } });
   }
 }
 

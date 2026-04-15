@@ -47,4 +47,16 @@ async function videoGet(id) {
   return res;
 }
 
-module.exports = { videoCreate, videoGet, buildVideoPayload };
+async function videoSave(opts) {
+  if (!opts.aiVideoId) throw new Error('--ai-video-id is required.');
+  if (!opts.workspaceId) throw new Error('--workspace-id is required.');
+  const payload = { ai_video_id: opts.aiVideoId, workspace_id: opts.workspaceId };
+  if (opts.folderId) payload.folder_id = opts.folderId;
+  if (opts.title) payload.title = opts.title;
+  const client = new IdomooClient();
+  const res = await client.saveAiVideo(payload);
+  console.log(JSON.stringify(res, null, 2));
+  return res;
+}
+
+module.exports = { videoCreate, videoGet, videoSave, buildVideoPayload };

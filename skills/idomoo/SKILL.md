@@ -1,284 +1,274 @@
 ---
 name: idomoo
-description: Use this skill to generate AI videos via the Idomoo API using the `idomoo` CLI tool. Trigger when the user asks to create an AI video, mentions Idomoo, Lucas (Idomoo's AI video creator), or wants to generate, render, or manage video briefs/blueprints/AI videos from the command line. Covers installation, first-time login, the end-to-end create flow, and individual brief/blueprint/video subcommands.
+description: Use this skill to generate AI videos via the Idomoo API using the `idomoo` CLI. Trigger when the user asks to create, edit, or manage AI videos, mentions Idomoo or Lucas (Idomoo's AI video creator), or wants to work with briefs/blueprints/brands/AI videos from the command line. Implements an interactive brand → brief → blueprint → video flow with user review and edits between steps.
 ---
 
 # idomoo CLI
 
-Command-line interface for the Idomoo AI Video Generation API (Lucas). Wraps the public REST API at `https://api-ai.idomoo.com` with OAuth2 token handling so you can create videos with a single command.
+Command-line interface for the Idomoo AI Video Generation API (Lucas). Wraps the public REST API at `https://api-ai.idomoo.com` with OAuth2 token handling. This skill tells agents **how to drive the CLI interactively** so the user stays in control at every step.
 
 ## When to use this skill
 
-- The user wants to generate an AI video and you have access to a shell.
+- The user wants to generate, edit, or manage AI videos and you have access to a shell.
 - The user mentions "Idomoo", "Lucas", or pastes an Idomoo Account ID / API key.
-- The user asks about creating briefs, blueprints, or rendering AI videos via the Idomoo API.
-- The user wants to script/automate Idomoo video generation.
+- The user asks about briefs, blueprints, brands, or AI videos.
 
-If the user wants to call the API directly (Python, curl, raw HTTP), this skill still applies — the workflow (auth → brief → blueprint → ai-video) is the same, but prefer the CLI when a shell is available because it handles polling and token refresh.
+---
 
 ## Installation
 
-The CLI ships as **standalone binaries** (no Node required) and as an **npm package**. Pick whichever matches the user's environment — binary install is preferred when the user doesn't already have Node ≥ 18.
+The CLI ships as **standalone binaries** (no Node required) and as an **npm package**. Prefer the binary install when the user doesn't already have Node ≥ 18.
 
 ### A. Native install (recommended — no Node needed)
 
 **macOS / Linux / WSL:**
-
 ```bash
 curl -fsSL https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/install.sh | bash
 ```
 
-Installs to `~/.local/bin/idomoo`. Supports arm64 and x86_64.
-
 **Windows (PowerShell):**
-
 ```powershell
 irm https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/install.ps1 | iex
 ```
-
-Installs to `%LOCALAPPDATA%\Programs\idomoo\idomoo.exe` and adds it to the user PATH automatically (requires reopening the terminal).
-
-Both installers auto-detect OS + architecture, download the matching binary from GitHub Releases, and verify SHA-256 checksums. Supported targets:
-- `darwin-arm64`, `darwin-x64`
-- `linux-x64`, `linux-arm64`
-- `win-x64`
-
-To pin a version: append `-s -- --version v0.1.1` (bash) or `-Version v0.1.1` (PowerShell).
 
 ### B. npm / pnpm / yarn (requires Node ≥ 18)
 
 ```bash
 npm install -g idomoo-cli
-# or
-pnpm add -g idomoo-cli
-# or
-yarn global add idomoo-cli
 ```
 
-### C. npx (no install, requires Node ≥ 18)
-
-For one-off use in CI or ad-hoc shells:
-
-```bash
-npx --yes idomoo-cli create -p "..."
-```
-
-### Verify
-
-```bash
-idomoo --help
-```
-
-### Troubleshooting install
-
-- **`command not found` after binary install on Mac/Linux**: `~/.local/bin` is not on PATH. Add `export PATH="$HOME/.local/bin:$PATH"` to `~/.zshrc` / `~/.bashrc` and reopen the terminal.
-- **`command not found` after npm install**: npm global bin is not on PATH. Find it with `npm config get prefix` — add `<prefix>` (Windows) or `<prefix>/bin` (Mac/Linux) to PATH.
-- **Windows SmartScreen warning**: the binary is unsigned. Click "More info" → "Run anyway". This will be fixed with Authenticode signing in a later release.
-- **macOS "cannot be opened because the developer cannot be verified"**: run `xattr -d com.apple.quarantine ~/.local/bin/idomoo` once, or right-click → Open.
-
-### Uninstall
-
-```bash
-# Native installer
-curl -fsSL https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/uninstall.sh | bash
-# Windows
-irm https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/uninstall.ps1 | iex
-# npm
-npm uninstall -g idomoo-cli
-```
-
-## First-time setup (login)
-
-The CLI authenticates with the Idomoo API using OAuth2 client credentials. Token endpoint is `https://usa-api.idomoo.com/api/v3/oauth/token`, called via HTTP Basic auth. The CLI caches the bearer token in `~/.idomoo/config.json` (Windows: `%USERPROFILE%\.idomoo\config.json`) and auto-refreshes it.
-
-Run once:
+### First-time login
 
 ```bash
 idomoo login
 ```
 
-You will be prompted for:
-- **Idomoo Account ID** — visible characters
-- **Idomoo API Secret Key** — input is masked with `*`
+Prompts for Idomoo Account ID and API Secret Key (masked). Non-interactive: `idomoo login --account-id ... --api-key ...`. Credentials are cached at `~/.idomoo/config.json` (Windows: `%USERPROFILE%\.idomoo\config.json`) and the OAuth2 token auto-refreshes.
 
-The CLI immediately verifies by fetching a token. On success it prints `Verifying credentials... OK`.
+---
 
-You can also pass them non-interactively (handy for CI):
+## 🎬 Interactive video creation flow
+
+**This is the primary way to use the skill.** Never jump straight to `idomoo create` unless the user explicitly asks for a one-shot. Walk the user through the steps below, pausing for confirmation at each gate.
+
+### Step 1 — Pick or create a brand
+
+Ask the user: *"Which brand should this video use? I can list existing brands, or we can skip branding for this one."*
+
+- **List existing brands:**
+  ```bash
+  idomoo brand list
+  ```
+  Show the user `id` + `name` for each returned brand. Let them pick one (remember the `brand_id`).
+
+- **Create a new brand** (if the user wants fresh branding):
+  ```bash
+  idomoo brand create -n "Acme Corp" \
+    --logo-url "https://example.com/logo.png" \
+    --colors "rgb(255,87,51)" --colors "rgb(46,134,171)" \
+    --fonts "https://fonts.googleapis.com/css2?family=Inter" \
+    --tone-of-voice "friendly, confident" \
+    --use-stock-footage
+  ```
+  Gather values from the user conversationally (name is required; everything else optional). The response has `id` — remember it as `brand_id`.
+
+- **Update an existing brand** later if needed:
+  ```bash
+  idomoo brand update <brand_id> --tone-of-voice "more casual" --colors "rgb(0,0,0)"
+  ```
+
+- **No brand:** skip this step and continue without `--brand-id`.
+
+### Step 2 — Gather brief information
+
+Ask the user for:
+- **Prompt** (required) — one-paragraph description of what the video is about
+- **Title** — video title
+- **Audience name + description** — who it's for
+- **Script** — if they have pre-written narration (otherwise Lucas writes it)
+- **Knowledge base ID** — if they want the script grounded in specific docs
+- **Assets / PPT / parameters** — advanced (JSON payloads, skip unless asked)
+
+### Step 3 — Create the brief and show it
 
 ```bash
-idomoo login --account-id ACCOUNT_ID --api-key SECRET_KEY
+idomoo brief create -p "<prompt>" -t "<title>" \
+  --brand-id <brand_id> \
+  --audience-name "<name>" --audience-description "<desc>"
 ```
 
-To override regional/auth URLs:
+The response has `id` (`brief_id`) and a structured `Brief` body (audience, main_messages, script, tone, narrator_style, call_to_action, custom_instructions). **Show this to the user** and ask: *"Does the brief look right? I can edit any part of it before we continue."*
+
+### Step 4 — Edit the brief until the user approves
+
+The API exposes two ways to edit a brief. Pick whichever fits the user's request:
+
+**(a) Natural-language edit** — best when the user gives a free-form instruction:
+```bash
+idomoo brief edit <brief_id> -u "make the audience young professionals"
+idomoo brief edit <brief_id> -u "shorten the script to 3 key points"
+idomoo brief edit <brief_id> -u "change the call to action to 'Sign up today'"
+```
+
+**(b) Structured patch** — best when the user knows exactly which field to change:
+```bash
+idomoo brief patch <brief_id> \
+  --audience-name "Executives" \
+  --audience-description "C-level decision makers in mid-market SaaS" \
+  --tone "authoritative" \
+  --call-to-action "Book a demo" \
+  --main-message "Cut onboarding time in half" \
+  --main-message "Enterprise-grade security" \
+  --script-line "Opening hook..." \
+  --script-line "Key benefit..." \
+  --narrator-style "confident" \
+  --custom-instructions "Avoid industry jargon"
+```
+
+After each edit, print the updated brief JSON and ask the user: *"Good to go, or more changes?"* Loop until they say **"approved"** or similar.
+
+### Step 5 — Create the blueprint and show it
+
+Once the brief is approved:
 
 ```bash
-idomoo login --auth-url https://usa-api.idomoo.com/api/v3/oauth/token --api-url https://api-ai.idomoo.com
+idomoo blueprint create -b <brief_id> \
+  -d 30 \
+  --scene-library-id <id>      # optional
+  --narrator-id <id>            # optional
+  --presenter-id <id>           # optional
+  --use-avatar                  # optional
+  --media-workspace-id <id>     # repeatable
+  --wait                        # blocks until Done
 ```
 
-## Quick start — create a video end-to-end
+Show the returned blueprint to the user. Explain: *"This is the scene-by-scene structure of your video. I can adjust it before we render."*
 
-The simplest flow. The `create` command chains brief → blueprint → ai-video and polls until the video URL is ready:
+### Step 6 — Edit the blueprint until the user approves
+
+Blueprints only support natural-language editing:
 
 ```bash
-idomoo create -p "Promote our summer sale to high-spending customers" -t "Summer Sale"
+idomoo blueprint edit <blueprint_id> -p "use a CTA scene as the last scene"
+idomoo blueprint edit <blueprint_id> -p "swap the first two scenes"
+idomoo blueprint edit <blueprint_id> -p "replace the product demo with a testimonial"
 ```
 
-It prints status updates at each phase and finishes with the rendered `Video URL: ...`. Useful options:
+Add `--wait` to block until the update is applied. Show the user the updated blueprint. Loop until approved.
 
-| Flag | Description |
-| --- | --- |
-| `-p, --prompt <text>` | **Required.** Natural-language description of what the video should be about. |
-| `-t, --title <text>` | Video title. |
-| `-s, --script <text>` | Pre-written narration script. If omitted, Lucas writes one from the prompt. |
-| `--brand-id <id>` | Use a brand for styling/colors/logo. |
-| `--kb-id <id>` | Knowledge base ID to ground the script in. |
-| `--audience-name <name>` | Target audience name (e.g. `HeavySpenders`). |
-| `--audience-description <text>` | Free-text description of the audience. |
-| `-d, --duration <seconds>` | Target duration of the final video (default `30`). |
-| `--scene-library-id <id>` | Library of scene templates to use. |
-| `--narrator-id <id>` | Voice ID for narration (see `audio/voices` in the API). |
-| `--avatar-id <id>` | Avatar to use in the video. |
-| `--presenter-id <id>` | Presenter to use in the video. |
-| `--use-avatar` | Use the avatar from the chosen presenter. |
-| `--media-workspace-id <id>` | Workspace containing media assets (repeatable). |
-| `--data-points <json>` | JSON object of dynamic data points to substitute in the script. |
-| `--workspace-id <id>` | Destination workspace for the rendered video. |
-| `--path <path>` | Destination path within the workspace. |
+### Step 7 — Render the final video
 
-## Command reference
+When the user approves the blueprint:
 
-### `idomoo login [options]`
-Save credentials to `~/.idomoo/config.json`. See "First-time setup" above.
+```bash
+idomoo video create -b <blueprint_id> \
+  --data-points '{"customer_name":"Jane"}' \
+  --audience HeavySpenders \
+  --analytic-tag Q2Campaign \
+  --workspace-id <id> \
+  --path /videos \
+  --wait
+```
 
-### `idomoo config show`
-Print the current config (API key is masked) and the path to the config file. Default command if you just run `idomoo config`.
+The `--wait` flag polls until the video is `Done` and prints the final `Video URL`. Present it to the user.
 
-### `idomoo config set [options]`
-Update individual fields without re-running login. Flags: `--account-id`, `--api-key`, `--auth-url`, `--api-url`. Updating credentials clears the cached token.
+### Step 8 (optional) — Save to a workspace
 
-### `idomoo config reset`
-Wipe credentials and cached token, restoring URL defaults.
+If the user wants the rendered video persisted to a specific workspace/folder:
 
-### `idomoo brief create -p "..." [options]`
-Create a brief (the input description for the video). Returns a `BriefResponse` with an `id` and a `status` field. Required flag is `-p, --prompt`. Optional: `-t, --title`, `-s, --script`, `--brand-id`, `--kb-id`, `--audience-name`, `--audience-description`. Output is JSON.
+```bash
+idomoo video save \
+  --ai-video-id <id> \
+  --workspace-id <id> \
+  --folder-id <id> \
+  --title "Summer Sale Promo"
+```
 
-### `idomoo brief get <brief_id>`
-Fetch a brief by ID. Use to poll status (`Waiting for a file` / `In process` / `Done` / `Error`).
+---
 
-### `idomoo blueprint create -b <brief_id> [options]`
-Create a video blueprint (scene structure) from a brief. Required: `-b, --brief-id`. Optional flags include `-d, --duration` (seconds, default 30), `--scene-library-id`, `--narrator-id`, `--avatar-id`, `--presenter-id`, `--use-avatar`, `--brain-model`, `--prompt-version`, `--media-workspace-id` (repeatable). Add `--wait` to block and poll until the blueprint is `Done`.
+## ⏩ One-shot end-to-end (only when explicitly requested)
 
-### `idomoo blueprint get <blueprint_id>`
-Fetch a blueprint by ID. Used for polling.
+If the user says *"just make it"* or *"don't ask me, I trust you"*, skip the interactive flow and run:
 
-### `idomoo video create -b <blueprint_id> [options]`
-Render the final AI video from a blueprint. Required: `-b, --blueprint-id`. Optional: `--data-points '{"key":"val"}'`, `--audience` (repeatable), `--analytic-tag` (repeatable), `--workspace-id`, `--path`, `--brain-model`, `--prompt-version`. Add `--wait` to block until rendering is `Done` and print the final `Video URL`.
+```bash
+idomoo create -p "<prompt>" -t "<title>" --brand-id <brand_id> [other flags]
+```
 
-### `idomoo video get <ai_video_id>`
-Fetch an AI video by ID. When the status reaches `Done`, the response contains `video_url`.
+This chains brief → blueprint → ai-video with polling and returns the final URL. Accepts the union of brief/blueprint/video flags.
 
-### `idomoo brand create -n "..." [options]`
-Create a brand for styling/voice/logo used in videos. Required: `-n, --name`. Optional:
-- `--logo-url <url>` — brand logo URL
-- `--colors <rgb>` — brand color (up to 4, repeatable — e.g. `--colors "rgb(255,87,51)" --colors "rgb(46,134,171)"`)
-- `--fonts <url>` — Google Fonts or direct font file URL (repeatable)
-- `--use-stock-footage` — allow Getty stock footage
-- `--reference-image-url <url>` — reference image for AI image generation
-- `--tone-of-voice <text>` — narrator tone
-- `--tone-instruction <text>` — custom tone instructions
-- `--pronunciation-dictionary <json>` — JSON map of words→pronunciations
+---
 
-Returns a `BrandResponse` with an `id` you can pass to brief/blueprint/video via `--brand-id`.
+## Complete command reference
 
-### `idomoo brand get <brand_id>`
-Fetch a brand by ID.
+### Authentication & config
+- `idomoo login [--account-id ID --api-key KEY --auth-url URL --api-url URL]`
+- `idomoo config show`
+- `idomoo config set [--account-id ID ...]`
+- `idomoo config reset`
 
-### `idomoo brand update <brand_id> [options]`
-Partially update brand fields. Accepts the same optional flags as `brand create` — only the fields you pass are changed.
+### Brand
+- `idomoo brand list [-n NAME]` — list/search brands
+- `idomoo brand create -n NAME [--logo-url URL --colors RGB... --fonts URL... --use-stock-footage --reference-image-url URL --tone-of-voice TEXT --tone-instruction TEXT --pronunciation-dictionary JSON]`
+- `idomoo brand get <brand_id>`
+- `idomoo brand update <brand_id> [same options as create]`
 
-### `idomoo create -p "..." [options]`
-End-to-end shortcut that does brief → blueprint → ai-video with polling between each step. Accepts the union of all the flags above. Recommended starting point for one-off video generation.
+### Brief
+- `idomoo brief create -p PROMPT [-t TITLE -s SCRIPT --brand-id ID --kb-id ID --audience-name NAME --audience-description TEXT --assets JSON --ppt URL --parameters JSON]`
+- `idomoo brief get <brief_id>`
+- `idomoo brief patch <brief_id> [--audience-name --audience-description --main-message (repeat) --script-line (repeat) --call-to-action --tone --narrator-style --custom-instructions]`
+- `idomoo brief edit <brief_id> -u "natural-language change"` — Lucas applies the change
 
-## Status values
+### Blueprint
+- `idomoo blueprint create -b BRIEF_ID [-d DURATION --scene-library-id ID --narrator-id ID --avatar-id ID --presenter-id ID --use-avatar --brain-model NAME --prompt-version VER --media-workspace-id ID (repeat) --wait]`
+- `idomoo blueprint get <blueprint_id>`
+- `idomoo blueprint edit <blueprint_id> -p "natural-language change" [--wait]`
 
-All long-running resources (brief, blueprint, ai-video) have a `status` field with these values:
+### AI Video
+- `idomoo video create -b BLUEPRINT_ID [--data-points JSON --audience NAME (repeat) --analytic-tag TAG (repeat) --workspace-id ID --path PATH --brain-model NAME --prompt-version VER --wait]`
+- `idomoo video get <ai_video_id>`
+- `idomoo video save --ai-video-id ID --workspace-id ID [--folder-id ID --title TEXT]`
+
+### One-shot
+- `idomoo create -p PROMPT [...union of all brief/blueprint/video flags]`
+
+---
+
+## Status values & polling
+
+Brief, blueprint, and ai-video all have a `status` field:
 
 - `Waiting for a file` — pending external input
 - `In process` — actively processing
-- `Done` — ready (final video URL is available on AI videos)
-- `Error` — failed; check `status_message`
+- `Done` — ready
+- `Error` — failed; read `status_message`
 
-Polling cadence is 4 seconds with a 10-minute total timeout. Errors raise a non-zero exit code so you can chain in shell scripts.
+The CLI polls every 4 s with a 10 min timeout when `--wait` is passed. Errors exit non-zero.
 
-## Configuration file
+---
 
-Stored at `~/.idomoo/config.json` (Windows: `%USERPROFILE%\.idomoo\config.json`). Schema:
+## Rules for the agent
 
-```json
-{
-  "account_id": "...",
-  "api_key": "...",
-  "auth_url": "https://usa-api.idomoo.com/api/v3/oauth/token",
-  "api_url": "https://api-ai.idomoo.com",
-  "token": {
-    "access_token": "...",
-    "token_type": "Bearer",
-    "expires_at": 1715000000
-  }
-}
-```
+1. **Default to the interactive flow** (brand → brief → review/edit → blueprint → review/edit → video). Only use `idomoo create` when the user explicitly asks for a one-shot.
+2. **Always pause and show JSON** after `brief create`, `brief edit`, `brief patch`, `blueprint create`, `blueprint edit`. Ask for approval before moving on.
+3. **Prefer `brief edit -u "..."` / `blueprint edit -p "..."`** when the user describes changes in natural language. Use `brief patch` only when they specify exact fields.
+4. **Never log the API Secret Key**; `idomoo config show` masks it — preserve that in any output you pass back to the user.
+5. **Run `idomoo login` first** if the CLI returns `Missing credentials`. Propagate the error; don't guess credentials.
+6. **Use `--wait`** on blueprint-create, blueprint-edit, and video-create so the caller sees the final state, not an intermediate "In process".
+7. **Save the brand_id, brief_id, blueprint_id, ai_video_id** as you go — subsequent commands need them.
+8. **Output is JSON on stdout**; safe to pipe to `jq` for chaining. Status lines go to stdout/stderr.
 
-The `token` block is managed automatically. Refresh happens within 60s of expiry or after any 401. To force a fresh token, run `idomoo config reset` and `idomoo login` again.
-
-## Common workflows
-
-**One-shot video from a prompt:**
-```bash
-idomoo create -p "30-second promo for our new mobile app launch" -t "App Launch"
-```
-
-**Video from a pre-written script:**
-```bash
-idomoo create -p "Educational explainer" -t "How sleep works" \
-  -s "Ever wondered why we spend a third of our lives asleep? ..."
-```
-
-**Branded video aimed at a specific audience:**
-```bash
-idomoo create -p "Promote summer sale" -t "Summer Sale" \
-  --brand-id brand_67890 --kb-id kb_12345 \
-  --audience-name HeavySpenders \
-  --audience-description "Upper-middle-class households aged 25-45"
-```
-
-**Step-by-step (manual control between steps):**
-```bash
-brief_id=$(idomoo brief create -p "Quarterly results recap" | jq -r '.id')
-blueprint_id=$(idomoo blueprint create -b "$brief_id" --wait | jq -r '.id')
-idomoo video create -b "$blueprint_id" --wait
-```
-
-**Inspect existing artifacts:**
-```bash
-idomoo brief get brief_12345
-idomoo blueprint get blueprint_67890
-idomoo video get aivideo_abcdef
-```
+---
 
 ## Troubleshooting
 
-- **`Missing credentials`** — run `idomoo login`.
-- **`Token request failed (401)`** — wrong account ID / API key. Re-run `idomoo login`.
-- **`Token request failed (400/403)`** — make sure the request body is form-urlencoded (`grant_type=client_credentials`), not JSON. The CLI does this automatically; you only see this if you bypassed the CLI.
-- **`Processing failed`** — the API returned `status: Error`. Print the `status_message` from the JSON output for the reason; it usually points at a missing brand asset, invalid scene library, or unsupported prompt.
-- **`Timed out`** — polling exceeded 10 minutes. The job might still finish on the server. Use `idomoo video get <id>` to keep checking.
-- **`'idomoo' is not recognized` / `command not found`** — npm global bin is not on PATH. Find it with `npm config get prefix` and add to PATH, then reopen the terminal.
+- `Missing credentials` → run `idomoo login`.
+- `Token request failed (401)` → wrong account ID / API key; re-run `idomoo login`.
+- `Processing failed` → read `status_message` from the JSON for the reason (usually missing brand asset, invalid scene library, or unsupported prompt).
+- `Timed out` → polling exceeded 10 min. Job may still finish; use `idomoo <resource> get <id>` to keep checking.
+- `'idomoo' is not recognized` / `command not found` → for binary install, add `~/.local/bin` to PATH (Mac/Linux) or restart the terminal (Windows). For npm, run `npm config get prefix` and add the global bin dir to PATH.
 
-## Notes for agents using this CLI
+---
 
-- Always run `idomoo login` (or check `~/.idomoo/config.json` exists) before any API command. The CLI errors out clearly if credentials are missing — propagate that to the user instead of guessing.
-- Output of every command is JSON on stdout, status messages on stderr/stdout — safe to pipe to `jq` for chaining.
-- The `--wait` flag is recommended whenever the next step depends on the resource being ready.
-- For long jobs, the `create` end-to-end command is the simplest path. Only drop down to individual `brief`/`blueprint`/`video` subcommands when the user wants to inspect or modify intermediate results.
-- Never log the API secret key. The `idomoo config show` output already masks it; preserve that when passing output back to the user.
-- Authoritative API spec: the OpenAPI schema at `https://developers.idomoo.com/docs/ai-api-schema/`. Use it when the user asks for endpoints that this CLI doesn't expose yet (the CLI currently covers only the brief/blueprint/ai-video core, not images, audio, brands, music, getty, etc.).
+## Not yet exposed via the CLI
+
+The API has additional endpoints (audio/voices, avatars, presenters search, Getty media, music, knowledge base CRUD, images, video translation). These are marked `x-internal` in the public OpenAPI schema. If the user asks for something in those domains, fall back to direct `curl` calls using the OAuth2 token from `~/.idomoo/config.json` — or tell them it's out of scope for the CLI today.

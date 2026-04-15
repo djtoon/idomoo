@@ -3,10 +3,10 @@ const pkg = require('../package.json');
 
 const { login } = require('./commands/login');
 const { showConfig, setConfig, resetConfig } = require('./commands/config');
-const { briefCreate, briefGet } = require('./commands/brief');
-const { blueprintCreate, blueprintGet } = require('./commands/blueprint');
-const { videoCreate, videoGet } = require('./commands/video');
-const { brandCreate, brandGet, brandUpdate } = require('./commands/brand');
+const { briefCreate, briefGet, briefPatch, briefUpdateByPrompt } = require('./commands/brief');
+const { blueprintCreate, blueprintGet, blueprintUpdateByPrompt } = require('./commands/blueprint');
+const { videoCreate, videoGet, videoSave } = require('./commands/video');
+const { brandCreate, brandGet, brandUpdate, brandList } = require('./commands/brand');
 const { createVideo } = require('./commands/create');
 const { IdomooError } = require('./client');
 
@@ -62,11 +62,35 @@ function build() {
     .option('--kb-id <id>', 'Knowledge base ID')
     .option('--audience-name <name>', 'Target audience name')
     .option('--audience-description <text>', 'Target audience description')
+    .option('--assets <json>', 'JSON array of assets to use in the video')
+    .option('--ppt <url>', 'PowerPoint presentation URL')
+    .option('--parameters <json>', 'JSON object of dynamic parameters (name-value pairs)')
     .action((opts) => briefCreate(opts));
   briefCmd
     .command('get <brief_id>')
     .description('Fetch a brief by ID')
     .action((id) => briefGet(id));
+  briefCmd
+    .command('patch <brief_id>')
+    .description('Update structured brief fields (PATCH /brief/{id}) — only provided fields change')
+    .option('--audience-name <name>', 'Audience name')
+    .option('--audience-description <text>', 'Audience description')
+    .option('--main-message <text>', 'Main message — repeatable', collect, [])
+    .option('--script-line <text>', 'Script line (ordered) — repeatable', collect, [])
+    .option('--call-to-action <text>', 'Call to action')
+    .option('--tone <text>', 'Narrator tone')
+    .option('--narrator-style <text>', 'Narrator style')
+    .option('--custom-instructions <text>', 'Custom instructions')
+    .action((id, opts) => {
+      opts.mainMessages = opts.mainMessage;
+      opts.script = opts.scriptLine;
+      return briefPatch(id, opts);
+    });
+  briefCmd
+    .command('edit <brief_id>')
+    .description('Edit brief via natural-language prompt (POST /brief/update) — Lucas applies the requested change')
+    .requiredOption('-u, --user-prompt <text>', 'Natural-language instruction (e.g. "make the audience young professionals")')
+    .action((id, opts) => briefUpdateByPrompt(id, opts));
 
   // ---- blueprint ----
   const blueprintCmd = program.command('blueprint').description('Manage blueprints');
@@ -93,6 +117,12 @@ function build() {
     .command('get <blueprint_id>')
     .description('Fetch a blueprint by ID (also used to poll status)')
     .action((id) => blueprintGet(id));
+  blueprintCmd
+    .command('edit <blueprint_id>')
+    .description('Edit blueprint via natural-language prompt (POST /blueprint/{id}) — e.g. "use a CTA scene as the last scene"')
+    .requiredOption('-p, --prompt <text>', 'Natural-language change request')
+    .option('--wait', 'Poll until the blueprint update is applied')
+    .action((id, opts) => blueprintUpdateByPrompt(id, opts));
 
   // ---- video ----
   const videoCmd = program.command('video').description('Manage AI videos');
@@ -117,9 +147,22 @@ function build() {
     .command('get <ai_video_id>')
     .description('Fetch an AI video by ID (also used to poll status)')
     .action((id) => videoGet(id));
+  videoCmd
+    .command('save')
+    .description('Save a rendered AI video to a workspace (POST /ai-video/save)')
+    .requiredOption('--ai-video-id <id>', 'AI video ID to save')
+    .requiredOption('--workspace-id <id>', 'Destination workspace ID')
+    .option('--folder-id <id>', 'Destination folder ID')
+    .option('-t, --title <text>', 'Title for the saved video')
+    .action((opts) => videoSave(opts));
 
   // ---- brand ----
   const brandCmd = program.command('brand').description('Manage brands');
+  brandCmd
+    .command('list')
+    .description('List brands available on the account (uses /brands/search — pass --name to filter)')
+    .option('-n, --name <text>', 'Filter brands by name (company_name.com format)', '')
+    .action((opts) => brandList(opts));
   brandCmd
     .command('create')
     .description('Create a new brand')

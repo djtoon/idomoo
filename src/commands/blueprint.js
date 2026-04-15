@@ -43,4 +43,23 @@ async function blueprintGet(id) {
   return res;
 }
 
-module.exports = { blueprintCreate, blueprintGet, buildBlueprintPayload };
+async function blueprintUpdateByPrompt(id, opts) {
+  if (!opts.prompt) {
+    throw new Error('--prompt is required (natural-language instruction for Lucas, e.g. "use a CTA scene as the last scene").');
+  }
+  const client = new IdomooClient();
+  const res = await client.updateBlueprintByPrompt(id, opts.prompt);
+  console.log(JSON.stringify(res, null, 2));
+
+  if (opts.wait) {
+    console.log('Waiting for blueprint update to apply...');
+    const done = await pollUntilDone(() => client.getBlueprint(res.id || id), {
+      onTick: (d) => process.stdout.write(`  status: ${d.status}\n`),
+    });
+    console.log(JSON.stringify(done, null, 2));
+    return done;
+  }
+  return res;
+}
+
+module.exports = { blueprintCreate, blueprintGet, blueprintUpdateByPrompt, buildBlueprintPayload };
