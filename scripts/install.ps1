@@ -52,12 +52,64 @@ Ok "Version:  $Version"
 Ok "Platform: $os-$arch"
 Ok "Target:   $InstallDir\$BinName"
 
+# ── download helper ──────────────────────────────────────────────────────────
+# Streams the response body so we can print progress without paying the 10x
+# slowdown that Invoke-WebRequest's built-in progress bar costs.
+function Download-WithProgress {
+  param([string]$Url, [string]$OutFile, [string]$Label)
+
+  $req = [System.Net.HttpWebRequest]::Create($Url)
+  $req.AllowAutoRedirect = $true
+  $req.UserAgent = "idomoo-installer/0.2"
+  $resp = $req.GetResponse()
+  $total = [int64]$resp.ContentLength
+  $totalMB = if ($total -gt 0) { [math]::Round($total / 1MB, 1) } else { 0 }
+
+  if ($total -gt 0) {
+    Write-Host "==> Downloading $Label (~$totalMB MB)..." -ForegroundColor Cyan
+  } else {
+    Write-Host "==> Downloading $Label..." -ForegroundColor Cyan
+  }
+
+  $in  = $resp.GetResponseStream()
+  $out = [System.IO.File]::Create($OutFile)
+  $buf = New-Object byte[] 81920
+  $read = 0
+  $sw = [System.Diagnostics.Stopwatch]::StartNew()
+  $lastTick = 0
+
+  try {
+    while (($n = $in.Read($buf, 0, $buf.Length)) -gt 0) {
+      $out.Write($buf, 0, $n)
+      $read += $n
+      # Print progress at most twice a second so output stays calm.
+      if ($sw.ElapsedMilliseconds - $lastTick -ge 500) {
+        $lastTick = $sw.ElapsedMilliseconds
+        $mb = [math]::Round($read / 1MB, 1)
+        $speed = if ($sw.Elapsed.TotalSeconds -gt 0) {
+          [math]::Round(($read / 1MB) / $sw.Elapsed.TotalSeconds, 1)
+        } else { 0 }
+        if ($total -gt 0) {
+          $pct = [math]::Round(($read / $total) * 100, 0)
+          Write-Host -NoNewline "`r    $mb / $totalMB MB  ($pct%)  $speed MB/s     "
+        } else {
+          Write-Host -NoNewline "`r    $mb MB downloaded  $speed MB/s     "
+        }
+      }
+    }
+  } finally {
+    $out.Close(); $in.Close(); $resp.Close()
+  }
+  Write-Host ""   # newline after progress line
+  $elapsed = [math]::Round($sw.Elapsed.TotalSeconds, 1)
+  Ok "$Label downloaded in ${elapsed}s"
+}
+
 # ── download ─────────────────────────────────────────────────────────────────
 $tmp = New-Item -ItemType Directory -Path (Join-Path $env:TEMP "idomoo-install-$([guid]::NewGuid())")
 try {
-  Info "Downloading $asset..."
-  Invoke-WebRequest -Uri "$base/$asset"      -OutFile (Join-Path $tmp $asset)      -UseBasicParsing
-  Invoke-WebRequest -Uri "$base/checksums.txt" -OutFile (Join-Path $tmp "checksums.txt") -UseBasicParsing
+  Download-WithProgress -Url "$base/$asset"        -OutFile (Join-Path $tmp $asset)        -Label $asset
+  Download-WithProgress -Url "$base/checksums.txt" -OutFile (Join-Path $tmp "checksums.txt") -Label "checksums.txt"
 
   # ── verify ─────────────────────────────────────────────────────────────────
   Info "Verifying checksum..."

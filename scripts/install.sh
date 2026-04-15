@@ -91,10 +91,14 @@ require mkdir
 require chmod
 require mv
 
+# DL handles a quiet probe (for the latest-tag JSON) and DLP shows a progress
+# bar (for the ~100 MB binary). Detached so users see something happening.
 if command -v curl >/dev/null 2>&1; then
-  DL() { curl -fsSL "$1" -o "$2"; }
+  DL()  { curl -fsSL "$1" -o "$2"; }
+  DLP() { curl -fL --progress-bar "$1" -o "$2"; }
 elif command -v wget >/dev/null 2>&1; then
-  DL() { wget -q "$1" -O "$2"; }
+  DL()  { wget -q "$1" -O "$2"; }
+  DLP() { wget --show-progress -q "$1" -O "$2"; }
 else
   die "Need curl or wget."
 fi
@@ -129,9 +133,9 @@ BASE="https://github.com/${GITHUB_REPO}/releases/download/${VERSION}"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-info "Downloading $ASSET..."
-DL "${BASE}/${ASSET}"        "${TMP}/${ASSET}"        || die "Download failed: ${BASE}/${ASSET}"
-DL "${BASE}/checksums.txt"   "${TMP}/checksums.txt"   || die "Download failed: ${BASE}/checksums.txt"
+info "Downloading $ASSET (binary is ~100 MB — this can take 30-90s)..."
+DLP "${BASE}/${ASSET}"        "${TMP}/${ASSET}"        || die "Download failed: ${BASE}/${ASSET}"
+DL  "${BASE}/checksums.txt"   "${TMP}/checksums.txt"   || die "Download failed: ${BASE}/checksums.txt"
 
 # ── verify ─────────────────────────────────────────────────────────────────────
 info "Verifying checksum..."
