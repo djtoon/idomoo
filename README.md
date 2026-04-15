@@ -1,11 +1,10 @@
 # Idomoo — AI Video for your terminal & AI agents
 
-Four ways to use the Idomoo AI Video Generation API (Lucas) from anywhere:
+Three ways to use the Idomoo AI Video Generation API (Lucas) from anywhere:
 
-1. **[Claude Desktop extension](./mcpb/)** — double-click `idomoo.mcpb` to install 14 MCP tools into Claude Desktop
-2. **[Manual MCP server](./mcpb/)** — point Cursor, Claude Code, or any MCP client at the bundled local server
-3. **[CLI](./scripts/)** — native binary on macOS, Linux, and Windows (no Node required)
-4. **[Agent skill](./skills/idomoo/)** — a `SKILL.md` that teaches Claude Code, Cursor, Copilot, etc. to drive the CLI in plain English
+1. **[Lucas MCP server](https://academy.idomoo.com/support/solutions/articles/4000227306-lucas-mcp-server-integration-guide)** — connect Claude Desktop, Cursor, or Claude Code to Idomoo's hosted MCP at `https://lucas-mcp.idomoo.ai/mcp`. Pair with [`skills/idomoo-mcp/SKILL.md`](./skills/idomoo-mcp/SKILL.md) so your AI knows the right interactive flow.
+2. **[CLI](./scripts/)** — native binary on macOS, Linux, and Windows (no Node required)
+3. **[Agent skill for the CLI](./skills/idomoo/)** — a `SKILL.md` that teaches Claude Code, Cursor, Copilot, etc. to drive the CLI in plain English
 
 👉 **Full install guide: https://djtoon.github.io/idomoo/**
 
@@ -13,11 +12,15 @@ Four ways to use the Idomoo AI Video Generation API (Lucas) from anywhere:
 
 ## Quick start
 
-### Option A — Claude Desktop (one-click)
+### Option A — Lucas MCP (Claude Desktop / Cursor / Claude Code)
 
-Download and double-click: **https://github.com/djtoon/idomoo/releases/latest/download/idomoo.mcpb**
+Add this as a custom MCP connector in your client:
+- **URL:** `https://lucas-mcp.idomoo.ai/mcp`
+- **Header:** `X-Lucas-MCP-Key: <your_mcp_key>` (request it from Idomoo support)
 
-Claude Desktop opens an install dialog, asks for your Account ID + API Key, and you're done. Try: *"Create a 30-second promo video for a coffee shop."*
+Then drop [`skills/idomoo-mcp/SKILL.md`](./skills/idomoo-mcp/SKILL.md) into `~/.claude/skills/idomoo-mcp/` (or your client's skills dir). Try: *"Create a 30-second promo video for a coffee shop using Lucas."*
+
+See the [official integration guide](https://academy.idomoo.com/support/solutions/articles/4000227306-lucas-mcp-server-integration-guide) for client-specific config snippets.
 
 ### Option B — CLI
 
@@ -26,10 +29,6 @@ curl -fsSL https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/install.
 idomoo login
 idomoo create -p "Promote our summer sale" -t "Summer Sale"
 ```
-
-### Option C — MCP in Cursor / Claude Code
-
-See [`mcpb/README.md`](./mcpb/README.md) for manual MCP server setup.
 
 ---
 
