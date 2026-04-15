@@ -1,0 +1,85 @@
+{
+  "manifest_version": "0.3",
+  "name": "idomoo",
+  "display_name": "Idomoo AI Video",
+  "version": "0.1.0",
+  "description": "Generate AI videos with Idomoo / Lucas — brief, blueprint, and render, all from Claude.",
+  "long_description": "This extension connects Claude Desktop to the Idomoo AI Video Generation API. It exposes brand, brief, blueprint, and AI-video endpoints as MCP tools so Claude can drive the brief → blueprint → video workflow for you. Credentials (Account ID + API Key) are stored locally and never leave your machine.",
+  "author": {
+    "name": "Idomoo",
+    "url": "https://developers.idomoo.com/"
+  },
+  "homepage": "https://github.com/djtoon/idomoo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/djtoon/idomoo"
+  },
+  "license": "MIT",
+  "keywords": ["idomoo", "lucas", "ai-video", "video-generation", "mcp"],
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "IDOMOO_ACCOUNT_ID": "${user_config.account_id}",
+        "IDOMOO_API_KEY": "${user_config.api_key}",
+        "IDOMOO_AUTH_URL": "${user_config.auth_url}",
+        "IDOMOO_API_URL": "${user_config.api_url}"
+      }
+    }
+  },
+  "user_config": {
+    "account_id": {
+      "type": "string",
+      "title": "Idomoo Account ID",
+      "description": "Your Idomoo Account ID (from https://studio.idomoo.com)",
+      "required": true
+    },
+    "api_key": {
+      "type": "string",
+      "title": "Idomoo API Secret Key",
+      "description": "Your Idomoo API Secret Key — stored locally, never sent anywhere except to Idomoo's OAuth server.",
+      "sensitive": true,
+      "required": true
+    },
+    "auth_url": {
+      "type": "string",
+      "title": "OAuth Token URL",
+      "description": "Override the OAuth2 token endpoint (advanced — leave default unless on a non-US region).",
+      "default": "https://usa-api.idomoo.com/api/v3/oauth/token",
+      "required": false
+    },
+    "api_url": {
+      "type": "string",
+      "title": "AI API Base URL",
+      "description": "Override the AI API base URL (advanced).",
+      "default": "https://api-ai.idomoo.com",
+      "required": false
+    }
+  },
+  "tools": [
+    { "name": "brand_list", "description": "List / search brands on the account" },
+    { "name": "brand_create", "description": "Create a new brand with logo, colors, fonts, and tone" },
+    { "name": "brand_get", "description": "Fetch a brand by ID" },
+    { "name": "brand_update", "description": "Update a brand (partial)" },
+    { "name": "brief_create", "description": "Create a video brief from a natural-language prompt" },
+    { "name": "brief_get", "description": "Fetch a brief by ID" },
+    { "name": "brief_patch", "description": "Update structured brief fields (audience, tone, script, etc.)" },
+    { "name": "brief_edit", "description": "Edit a brief via natural-language instruction to Lucas" },
+    { "name": "blueprint_create", "description": "Create a blueprint (scene structure) from a brief" },
+    { "name": "blueprint_get", "description": "Fetch a blueprint by ID" },
+    { "name": "blueprint_edit", "description": "Edit a blueprint via natural-language instruction" },
+    { "name": "video_create", "description": "Render the final AI video from a blueprint" },
+    { "name": "video_get", "description": "Fetch an AI video by ID — returns video_url when Done" },
+    { "name": "video_save", "description": "Save a rendered video to a workspace + folder" }
+  ],
+  "tools_generated": false,
+  "compatibility": {
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "idomoo-mcpb",
+  "version": "0.1.0",
+  "description": "MCP server for the Idomoo AI Video Generation API — packaged as a Claude Desktop Extension.",
+  "type": "module",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "pack": "npm install --production && mcpb pack ."
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  },
+  "license": "MIT"
+}
