@@ -143,9 +143,25 @@ ok "Checksum verified."
 
 # ── install ────────────────────────────────────────────────────────────────────
 mkdir -p "$INSTALL_DIR"
+DEST="${INSTALL_DIR}/${BIN_NAME}"
+
+# Remove the old binary first so nothing weird happens with busy file handles
+# or stale quarantine attributes on macOS.
+if [ -e "$DEST" ]; then
+  info "Removing existing ${BIN_NAME}..."
+  rm -f "$DEST" 2>/dev/null || sudo rm -f "$DEST" 2>/dev/null || true
+fi
+
 chmod 0755 "${TMP}/${ASSET}"
-mv -f "${TMP}/${ASSET}" "${INSTALL_DIR}/${BIN_NAME}"
-ok "Installed ${BIN_NAME} to ${INSTALL_DIR}/${BIN_NAME}"
+mv -f "${TMP}/${ASSET}" "$DEST"
+
+# Clear the macOS Gatekeeper quarantine bit so users can run the binary
+# without the "cannot be opened because the developer cannot be verified" dialog.
+if [ "$OS" = "darwin" ] && command -v xattr >/dev/null 2>&1; then
+  xattr -d com.apple.quarantine "$DEST" 2>/dev/null || true
+fi
+
+ok "Installed ${BIN_NAME} to $DEST"
 
 # ── PATH check ─────────────────────────────────────────────────────────────────
 case ":$PATH:" in

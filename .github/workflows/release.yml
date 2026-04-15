@@ -50,6 +50,17 @@ jobs:
           bun build "$ENTRY" --compile --minify --sourcemap=none \
             --target=bun-windows-x64   --outfile dist/idomoo-win-x64.exe
 
+      - name: Setup Node (for MCPB build)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build Claude Desktop extension (idomoo.mcpb)
+        run: |
+          cd mcpb
+          npm install --omit=dev
+          npx -y @anthropic-ai/mcpb pack . ../dist/idomoo.mcpb
+
       - name: Generate checksums
         run: |
           cd dist
@@ -78,4 +89,5 @@ jobs:
             dist/idomoo-linux-x64
             dist/idomoo-linux-arm64
             dist/idomoo-win-x64.exe
+            dist/idomoo.mcpb
             dist/checksums.txt

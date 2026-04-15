@@ -72,8 +72,26 @@ try {
   if (-not (Test-Path $InstallDir)) {
     New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
   }
-  Move-Item -Force -Path (Join-Path $tmp $asset) -Destination (Join-Path $InstallDir $BinName)
-  Ok "Installed $BinName to $InstallDir\$BinName"
+  $destPath = Join-Path $InstallDir $BinName
+
+  # Kill any running idomoo.exe so the file isn't locked by the OS.
+  $running = Get-Process -Name "idomoo" -ErrorAction SilentlyContinue
+  if ($running) {
+    Info "Stopping running idomoo process(es) so the binary can be replaced..."
+    $running | Stop-Process -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Milliseconds 300
+  }
+
+  # Best-effort remove old binary first (silences edge cases where Move-Item
+  # hangs because the target path is reserved / handle-held by Explorer).
+  if (Test-Path $destPath) {
+    try { Remove-Item -Force -ErrorAction Stop $destPath } catch {
+      Warn "Could not remove old $destPath — will try to overwrite."
+    }
+  }
+
+  Move-Item -Force -Path (Join-Path $tmp $asset) -Destination $destPath
+  Ok "Installed $BinName to $destPath"
 } finally {
   Remove-Item -Recurse -Force $tmp -ErrorAction SilentlyContinue
 }

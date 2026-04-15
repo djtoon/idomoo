@@ -2,9 +2,9 @@
   "manifest_version": "0.3",
   "name": "idomoo",
   "display_name": "Idomoo AI Video",
-  "version": "0.1.0",
-  "description": "Generate AI videos with Idomoo / Lucas — brief, blueprint, and render, all from Claude.",
-  "long_description": "This extension connects Claude Desktop to the Idomoo AI Video Generation API. It exposes brand, brief, blueprint, and AI-video endpoints as MCP tools so Claude can drive the brief → blueprint → video workflow for you. Credentials (Account ID + API Key) are stored locally and never leave your machine.",
+  "version": "0.2.0",
+  "description": "Generate AI videos with Idomoo / Lucas — brief, blueprint, and render, all from Claude Desktop.",
+  "long_description": "This extension connects Claude Desktop to the Idomoo AI Video Generation API. It bundles a local MCP server that exposes brand, brief, blueprint, and AI-video endpoints as MCP tools — with names aligned to the official Lucas MCP (create_brief, create_blueprint, create_video, get_*) plus useful extras (edit_brief, edit_blueprint, patch_brief, save_video, full brand CRUD). Credentials (Account ID + API Key) are stored locally and only sent to Idomoo's OAuth endpoint.",
   "author": {
     "name": "Idomoo",
     "url": "https://developers.idomoo.com/"
@@ -61,20 +61,20 @@
     }
   },
   "tools": [
-    { "name": "brand_list", "description": "List / search brands on the account" },
-    { "name": "brand_create", "description": "Create a new brand with logo, colors, fonts, and tone" },
-    { "name": "brand_get", "description": "Fetch a brand by ID" },
-    { "name": "brand_update", "description": "Update a brand (partial)" },
-    { "name": "brief_create", "description": "Create a video brief from a natural-language prompt" },
-    { "name": "brief_get", "description": "Fetch a brief by ID" },
-    { "name": "brief_patch", "description": "Update structured brief fields (audience, tone, script, etc.)" },
-    { "name": "brief_edit", "description": "Edit a brief via natural-language instruction to Lucas" },
-    { "name": "blueprint_create", "description": "Create a blueprint (scene structure) from a brief" },
-    { "name": "blueprint_get", "description": "Fetch a blueprint by ID" },
-    { "name": "blueprint_edit", "description": "Edit a blueprint via natural-language instruction" },
-    { "name": "video_create", "description": "Render the final AI video from a blueprint" },
-    { "name": "video_get", "description": "Fetch an AI video by ID — returns video_url when Done" },
-    { "name": "video_save", "description": "Save a rendered video to a workspace + folder" }
+    { "name": "list_brands", "description": "List / search brands on the account" },
+    { "name": "create_brand", "description": "Create a new brand with logo, colors, fonts, and tone" },
+    { "name": "get_brand", "description": "Fetch a brand by ID" },
+    { "name": "update_brand", "description": "Update a brand (partial)" },
+    { "name": "create_brief", "description": "Create a video brief from a natural-language prompt" },
+    { "name": "get_brief", "description": "Fetch a brief by ID" },
+    { "name": "patch_brief", "description": "Update structured brief fields (audience, tone, script, etc.)" },
+    { "name": "edit_brief", "description": "Edit a brief via natural-language instruction to Lucas" },
+    { "name": "create_blueprint", "description": "Create a blueprint (scene structure) from a brief" },
+    { "name": "get_blueprint", "description": "Fetch a blueprint by ID" },
+    { "name": "edit_blueprint", "description": "Edit a blueprint via natural-language instruction" },
+    { "name": "create_video", "description": "Render the final AI video from a blueprint" },
+    { "name": "get_video", "description": "Fetch an AI video by ID — returns video_url when Done" },
+    { "name": "save_video", "description": "Save a rendered video to a workspace + folder" }
   ],
   "tools_generated": false,
   "compatibility": {

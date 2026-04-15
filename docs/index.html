@@ -257,6 +257,54 @@
       .tab { flex: 1; justify-content: center; padding: 9px 10px; font-size: 12px; }
       h1 { font-size: 32px; }
     }
+
+    /* ── Flow picker ── */
+    .flows {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 28px 0 12px;
+    }
+    .flow-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .flow-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(59,91,255,0.08);
+    }
+    .flow-card .flow-icon {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 4px;
+    }
+    .flow-card .flow-icon svg { width: 18px; height: 18px; }
+    .flow-card .flow-title { font-weight: 600; font-size: 15px; color: var(--text); }
+    .flow-card .flow-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+    .flow-card .flow-tag {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-mute);
+      margin-top: 6px;
+    }
+    .flow-card.featured {
+      background: linear-gradient(180deg, rgba(59,91,255,0.06), rgba(59,91,255,0) 60%);
+      border-color: var(--accent);
+    }
+    .flow-card.featured .flow-tag { color: var(--accent); }
+
+    .section-anchor { scroll-margin-top: 24px; }
   </style>
 </head>
 <body>
@@ -276,11 +324,118 @@
     </div>
 
     <div class="hero">
-      <h1>Generate <span class="accent">AI videos</span><br />from your terminal.</h1>
-      <p class="tagline">Install the Idomoo CLI on Windows, macOS, or Linux — or give your AI agent the skill and let it drive.</p>
+      <h1>Generate <span class="accent">AI videos</span><br />with Idomoo + your AI.</h1>
+      <p class="tagline">Claude Desktop extension, MCP server, or CLI + agent skill. Pick the flow that fits you.</p>
     </div>
 
-    <!-- 01 — Install the CLI -->
+    <!-- Flow picker -->
+    <div class="flows">
+      <a href="#flow-desktop" class="flow-card featured">
+        <div class="flow-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <span class="flow-title">Claude Desktop</span>
+        <span class="flow-desc">One-click install. Double-click the <code>.mcpb</code>, enter credentials, done.</span>
+        <span class="flow-tag">Recommended</span>
+      </a>
+      <a href="#flow-mcp" class="flow-card">
+        <div class="flow-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <span class="flow-title">Manual MCP</span>
+        <span class="flow-desc">Run the MCP server yourself in Cursor, Claude Code, or any MCP client.</span>
+        <span class="flow-tag">Advanced</span>
+      </a>
+      <a href="#flow-cli" class="flow-card">
+        <div class="flow-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        </div>
+        <span class="flow-title">CLI + Agent Skill</span>
+        <span class="flow-desc">Shell-based workflow. Native binaries + optional skill for your AI agent.</span>
+        <span class="flow-tag">Terminal users</span>
+      </a>
+      <a href="#flow-agent" class="flow-card">
+        <div class="flow-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+        <span class="flow-title">Let your AI do it</span>
+        <span class="flow-desc">Paste one message into Claude / Cursor — it reads this repo and sets itself up.</span>
+        <span class="flow-tag">Zero setup</span>
+      </a>
+    </div>
+
+    <!-- ═══════ FLOW 1: Claude Desktop (MCPB) ═══════ -->
+    <section id="flow-desktop" class="section-anchor">
+      <span class="section-kicker"><span class="n">01</span> · Claude Desktop</span>
+      <h2>Install on Claude Desktop (one click)</h2>
+      <p class="section-desc">Download the Desktop Extension (<code>.mcpb</code>), double-click it, paste your Idomoo credentials. Claude Desktop will expose 14 MCP tools for brand, brief, blueprint, and video — no Node, no terminal, nothing to configure.</p>
+
+      <div class="agent-actions" style="margin-bottom:14px;">
+        <a class="btn primary" href="https://github.com/djtoon/idomoo/releases/latest/download/idomoo.mcpb">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download idomoo.mcpb
+        </a>
+        <a class="btn" href="https://github.com/djtoon/idomoo/raw/main/mcpb/idomoo.mcpb">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Latest build from main
+        </a>
+      </div>
+
+      <ol style="margin-left:22px; color:var(--text-dim); font-size:14px; line-height:1.8;">
+        <li>Download <code>idomoo.mcpb</code> from the button above.</li>
+        <li>Double-click the file — Claude Desktop opens an install dialog.</li>
+        <li>Enter your <strong style="color:var(--text);">Account ID</strong> and <strong style="color:var(--text);">API Secret Key</strong> (from <a href="https://studio.idomoo.com" target="_blank" rel="noopener" style="color:var(--accent-hi);text-decoration:none;">studio.idomoo.com</a>).</li>
+        <li>Click <strong style="color:var(--text);">Install</strong>.</li>
+        <li>Ask Claude: <em>"Create a 30-second promo video for our coffee shop."</em></li>
+      </ol>
+
+      <p class="post-code-note" style="margin-top:14px;">Can't double-click? Open <strong>Claude Desktop → Settings → Extensions</strong> and drag the <code>.mcpb</code> file in.</p>
+    </section>
+
+    <!-- ═══════ FLOW 2: Manual MCP ═══════ -->
+    <section id="flow-mcp" class="section-anchor">
+      <span class="section-kicker"><span class="n">02</span> · Manual MCP</span>
+      <h2>Run the MCP server yourself</h2>
+      <p class="section-desc">For Cursor, Claude Code, or any other MCP client — wire the local Node MCP server directly. Clone, install deps, add a config block to your client.</p>
+
+      <div class="codeblock" style="margin-bottom:14px;">
+        <div class="codeblock-head">
+          <span class="codeblock-label"><span class="dot"></span> terminal</span>
+          <button class="copy-btn" onclick="copy(this,'git clone https://github.com/djtoon/idomoo.git\ncd idomoo/mcpb\nnpm install --omit=dev')">Copy</button>
+        </div>
+        <pre><code><span class="cmd">git</span> clone https://github.com/djtoon/idomoo.git
+<span class="cmd">cd</span> idomoo/mcpb
+<span class="cmd">npm</span> install --omit=dev</code></pre>
+      </div>
+
+      <p class="post-code-note" style="margin-top:4px;margin-bottom:14px;">Then add this block to your MCP client's config (Cursor: <code>~/.cursor/mcp.json</code>, Claude Code: <code>~/.config/claude/mcp.json</code>):</p>
+
+      <div class="codeblock">
+        <div class="codeblock-head">
+          <span class="codeblock-label"><span class="dot"></span> mcp.json</span>
+          <button class="copy-btn" onclick='copy(this,JSON.stringify({mcpServers:{idomoo:{command:"node",args:["/absolute/path/to/idomoo/mcpb/server/index.js"],env:{IDOMOO_ACCOUNT_ID:"your-account-id",IDOMOO_API_KEY:"your-api-key"}}}},null,2))'>Copy</button>
+        </div>
+        <pre><code>{
+  <span class="str">"mcpServers"</span>: {
+    <span class="str">"idomoo"</span>: {
+      <span class="str">"command"</span>: <span class="str">"node"</span>,
+      <span class="str">"args"</span>: [<span class="str">"/absolute/path/to/idomoo/mcpb/server/index.js"</span>],
+      <span class="str">"env"</span>: {
+        <span class="str">"IDOMOO_ACCOUNT_ID"</span>: <span class="str">"your-account-id"</span>,
+        <span class="str">"IDOMOO_API_KEY"</span>: <span class="str">"your-api-key"</span>
+      }
+    }
+  }
+}</code></pre>
+      </div>
+      <p class="post-code-note">Restart your MCP client. You'll see 14 tools: <code>list_brands</code>, <code>create_brief</code>, <code>edit_brief</code>, <code>create_blueprint</code>, <code>edit_blueprint</code>, <code>create_video</code>, and more.</p>
+    </section>
+
+    <!-- ═══════ FLOW 3: CLI + Skill ═══════ -->
+    <section id="flow-cli" class="section-anchor">
+      <span class="section-kicker"><span class="n">03</span> · CLI + Agent Skill</span>
+      <h2>Install the CLI on your machine</h2>
+      <p class="section-desc">Pick your OS. Native installers bundle everything — no Node.js required.</p>
     <section>
       <span class="section-kicker"><span class="n">01</span> · Install the CLI</span>
       <h2>Install on your machine</h2>
@@ -344,11 +499,11 @@
       </div>
     </section>
 
-    <!-- 02 — Add the Skill -->
+    <!-- 03b — Add the Skill (part of CLI flow) -->
     <section>
-      <span class="section-kicker"><span class="n">02</span> · Add the Agent Skill</span>
-      <h2>Teach your AI agent Idomoo</h2>
-      <p class="section-desc">The skill teaches Claude, Cursor, and other AI agents how to drive the CLI in plain English. Pick whichever install matches your setup.</p>
+      <span class="section-kicker"><span class="n">03b</span> · Agent Skill for the CLI</span>
+      <h2>Teach your AI agent to drive the CLI</h2>
+      <p class="section-desc">Optional. The skill teaches Claude, Cursor, GitHub Copilot, and other AI agents how to use the <code>idomoo</code> CLI in plain English. If you're using the Claude Desktop extension above, skip this — the skill is already bundled.</p>
 
       <div class="tabs" role="tablist" style="margin-top:4px;">
         <button class="tab active" data-tab="skill-npx" role="tab">skills CLI</button>
@@ -415,11 +570,11 @@
       </div>
     </section>
 
-    <!-- 03 — Have your AI agent do it -->
-    <section>
-      <span class="section-kicker"><span class="n">03</span> · Let your AI do it</span>
-      <h2>Or just send your coding agent here</h2>
-      <p class="section-desc">Open Claude Code, Cursor, or any AI coding assistant and paste the message below. It'll read this page, install everything, and start generating videos for you.</p>
+    <!-- ═══════ FLOW 4: Agent-driven ═══════ -->
+    <section id="flow-agent" class="section-anchor">
+      <span class="section-kicker"><span class="n">04</span> · Let your AI do it</span>
+      <h2>Just send your coding agent here</h2>
+      <p class="section-desc">Open Claude Code, Cursor, or any AI coding assistant and paste the message below. It'll read this repo, pick the right install path for your OS, and start generating videos for you.</p>
 
       <div class="agent-card">
         <div class="chat-bubble">
@@ -430,12 +585,12 @@
             <span class="chat-name">Paste this to your AI coding assistant</span>
           </div>
           <div class="chat-text">
-            Read <code>https://github.com/djtoon/idomoo</code> and install the Idomoo CLI for my OS using the native installer in <code>scripts/install.sh</code> (macOS/Linux) or <code>scripts/install.ps1</code> (Windows). Then read <code>skills/idomoo/SKILL.md</code> and follow it to help me create an AI video with the <code>idomoo</code> CLI.
+            Read <code>https://github.com/djtoon/idomoo</code>. Based on my environment, pick the best install path: if I'm in <strong>Claude Desktop</strong>, tell me to download <code>mcpb/idomoo.mcpb</code> and double-click it. If I'm in <strong>Cursor</strong> or another MCP client, guide me through the manual MCP setup in <code>mcpb/README.md</code>. Otherwise, install the native CLI via <code>scripts/install.sh</code> (macOS/Linux) or <code>scripts/install.ps1</code> (Windows) and load <code>skills/idomoo/SKILL.md</code>. Then help me create an AI video.
           </div>
         </div>
 
         <div class="agent-actions">
-          <button class="btn primary" data-copy-text="Copy prompt" onclick="copy(this,'Read https://github.com/djtoon/idomoo and install the Idomoo CLI for my OS using the native installer in scripts/install.sh (macOS/Linux) or scripts/install.ps1 (Windows). Then read skills/idomoo/SKILL.md and follow it to help me create an AI video with the idomoo CLI.')">
+          <button class="btn primary" data-copy-text="Copy prompt" onclick="copy(this,'Read https://github.com/djtoon/idomoo. Based on my environment, pick the best install path: if I am in Claude Desktop, tell me to download mcpb/idomoo.mcpb and double-click it. If I am in Cursor or another MCP client, guide me through the manual MCP setup in mcpb/README.md. Otherwise, install the native CLI via scripts/install.sh (macOS/Linux) or scripts/install.ps1 (Windows) and load skills/idomoo/SKILL.md. Then help me create an AI video.')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
             Copy prompt
           </button>

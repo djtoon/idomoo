@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 // Idomoo MCP server for Claude Desktop Extensions (MCPB).
 // Exposes brand / brief / blueprint / ai-video endpoints as MCP tools.
+//
+// Tool naming follows the official Lucas MCP convention (verb_noun) where
+// endpoints overlap. Extras (patch_brief, edit_brief, edit_blueprint,
+// save_video, brand_*) go beyond what Lucas MCP exposes.
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -11,14 +15,14 @@ import {
 import { IdomooClient, IdomooError } from "./client.js";
 
 const SERVER_NAME = "idomoo";
-const SERVER_VERSION = "0.1.0";
+const SERVER_VERSION = "0.2.0";
 
 // ── Tool definitions ────────────────────────────────────────────────────────
 
 const TOOLS = [
   // ---- Brand ----
   {
-    name: "brand_list",
+    name: "list_brands",
     description: "List / search brands on the account. Pass `name` as an optional filter (format: company_name.com). Returns an array of brands.",
     inputSchema: {
       type: "object",
@@ -26,7 +30,7 @@ const TOOLS = [
     },
   },
   {
-    name: "brand_create",
+    name: "create_brand",
     description: "Create a new brand with name, logo, colors, fonts, and tone of voice.",
     inputSchema: {
       type: "object",
@@ -49,7 +53,7 @@ const TOOLS = [
     },
   },
   {
-    name: "brand_get",
+    name: "get_brand",
     description: "Fetch a single brand by ID.",
     inputSchema: {
       type: "object",
@@ -58,7 +62,7 @@ const TOOLS = [
     },
   },
   {
-    name: "brand_update",
+    name: "update_brand",
     description: "Update brand fields. Only the fields you include are changed.",
     inputSchema: {
       type: "object",
@@ -80,8 +84,8 @@ const TOOLS = [
 
   // ---- Brief ----
   {
-    name: "brief_create",
-    description: "Create a brief (video input). Requires `prompt` — the natural-language video description.",
+    name: "create_brief",
+    description: "Create a brief (video input). Requires `prompt` — the natural-language video description. Matches the official Lucas MCP `create_brief` tool.",
     inputSchema: {
       type: "object",
       required: ["prompt"],
@@ -100,12 +104,12 @@ const TOOLS = [
     },
   },
   {
-    name: "brief_get",
-    description: "Fetch a brief by ID. Used to poll status.",
+    name: "get_brief",
+    description: "Fetch a brief by ID (also used to poll status). Matches the official Lucas MCP `get_brief` tool.",
     inputSchema: { type: "object", required: ["brief_id"], properties: { brief_id: { type: "string" } } },
   },
   {
-    name: "brief_patch",
+    name: "patch_brief",
     description: "Update structured brief fields (PATCH /brief/{id}). Only provided fields change.",
     inputSchema: {
       type: "object",
@@ -124,7 +128,7 @@ const TOOLS = [
     },
   },
   {
-    name: "brief_edit",
+    name: "edit_brief",
     description: "Edit a brief via natural-language instruction to Lucas (e.g. 'make the audience young professionals').",
     inputSchema: {
       type: "object",
@@ -138,14 +142,14 @@ const TOOLS = [
 
   // ---- Blueprint ----
   {
-    name: "blueprint_create",
-    description: "Create a blueprint (scene structure) from a brief. Use `wait: true` to block until Done.",
+    name: "create_blueprint",
+    description: "Create a blueprint (scene structure) from a brief. Use `wait: true` to block until Done. Matches the official Lucas MCP `create_blueprint` tool.",
     inputSchema: {
       type: "object",
       required: ["brief_id"],
       properties: {
         brief_id: { type: "string" },
-        video_duration_in_seconds: { type: "number" },
+        video_duration_in_seconds: { type: "number", description: "Target duration in seconds (15–900). Lucas defaults to 30." },
         scene_library_id: { type: "string" },
         narrator_id: { type: "string" },
         avatar_id: { type: "string" },
@@ -159,12 +163,12 @@ const TOOLS = [
     },
   },
   {
-    name: "blueprint_get",
-    description: "Fetch a blueprint by ID.",
+    name: "get_blueprint",
+    description: "Fetch a blueprint by ID. Matches the official Lucas MCP `get_blueprint` tool.",
     inputSchema: { type: "object", required: ["blueprint_id"], properties: { blueprint_id: { type: "string" } } },
   },
   {
-    name: "blueprint_edit",
+    name: "edit_blueprint",
     description: "Edit a blueprint via natural-language prompt (e.g. 'use a CTA scene as the last scene').",
     inputSchema: {
       type: "object",
@@ -179,8 +183,8 @@ const TOOLS = [
 
   // ---- Video ----
   {
-    name: "video_create",
-    description: "Render an AI video from a blueprint. Use `wait: true` to poll until the final video URL is ready.",
+    name: "create_video",
+    description: "Render an AI video from a blueprint. Use `wait: true` to poll until the final video URL is ready. Matches the official Lucas MCP `create_video` tool.",
     inputSchema: {
       type: "object",
       required: ["blueprint_id"],
@@ -198,13 +202,13 @@ const TOOLS = [
     },
   },
   {
-    name: "video_get",
-    description: "Fetch an AI video by ID. `video_url` is populated once status is Done.",
+    name: "get_video",
+    description: "Fetch an AI video by ID. `video_url` is populated once status is Done. Matches the official Lucas MCP `get_video` tool.",
     inputSchema: { type: "object", required: ["ai_video_id"], properties: { ai_video_id: { type: "string" } } },
   },
   {
-    name: "video_save",
-    description: "Save a rendered AI video into a workspace / folder.",
+    name: "save_video",
+    description: "Save a rendered AI video into a workspace / folder for long-term retention.",
     inputSchema: {
       type: "object",
       required: ["ai_video_id", "workspace_id"],
@@ -241,45 +245,45 @@ async function pollUntilDone(getter, { intervalMs = 4000, timeoutMs = 10 * 60 * 
 async function dispatch(client, name, args = {}) {
   switch (name) {
     // Brand
-    case "brand_list":   return client.searchBrands(args.name || "");
-    case "brand_create": return client.createBrand(args);
-    case "brand_get":    return client.getBrand(args.brand_id);
-    case "brand_update": {
+    case "list_brands":  return client.searchBrands(args.name || "");
+    case "create_brand": return client.createBrand(args);
+    case "get_brand":    return client.getBrand(args.brand_id);
+    case "update_brand": {
       const { brand_id, ...rest } = args;
       return client.updateBrand(brand_id, rest);
     }
     // Brief
-    case "brief_create": return client.createBrief(args);
-    case "brief_get":    return client.getBrief(args.brief_id);
-    case "brief_patch": {
+    case "create_brief": return client.createBrief(args);
+    case "get_brief":    return client.getBrief(args.brief_id);
+    case "patch_brief": {
       const { brief_id, ...rest } = args;
       return client.patchBrief(brief_id, rest);
     }
-    case "brief_edit":   return client.updateBriefByPrompt(args.brief_id, args.user_prompt);
+    case "edit_brief":   return client.updateBriefByPrompt(args.brief_id, args.user_prompt);
 
     // Blueprint
-    case "blueprint_create": {
+    case "create_blueprint": {
       const { wait, ...payload } = args;
       const res = await client.createBlueprint(payload);
       if (!wait) return res;
       return pollUntilDone(() => client.getBlueprint(res.id));
     }
-    case "blueprint_get":  return client.getBlueprint(args.blueprint_id);
-    case "blueprint_edit": {
+    case "get_blueprint":  return client.getBlueprint(args.blueprint_id);
+    case "edit_blueprint": {
       const res = await client.updateBlueprintByPrompt(args.blueprint_id, args.prompt);
       if (!args.wait) return res;
       return pollUntilDone(() => client.getBlueprint(res.id || args.blueprint_id));
     }
 
     // Video
-    case "video_create": {
+    case "create_video": {
       const { wait, ...payload } = args;
       const res = await client.createAiVideo(payload);
       if (!wait) return res;
       return pollUntilDone(() => client.getAiVideo(res.id));
     }
-    case "video_get":  return client.getAiVideo(args.ai_video_id);
-    case "video_save": return client.saveAiVideo(args);
+    case "get_video":  return client.getAiVideo(args.ai_video_id);
+    case "save_video": return client.saveAiVideo(args);
 
     default:
       throw new IdomooError(`Unknown tool: ${name}`);

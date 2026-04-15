@@ -1,6 +1,25 @@
-# idomoo-cli
+# Idomoo — AI Video for your terminal & AI agents
 
-Command-line interface for the [Idomoo AI Video Generation API](https://developers.idomoo.com/) (Lucas). Generate AI videos end-to-end from a single command — login, brief, blueprint, render — with automatic OAuth2 token handling and polling.
+Four ways to use the Idomoo AI Video Generation API (Lucas) from anywhere:
+
+1. **[Claude Desktop extension](./mcpb/)** — double-click `idomoo.mcpb` to install 14 MCP tools into Claude Desktop
+2. **[Manual MCP server](./mcpb/)** — point Cursor, Claude Code, or any MCP client at the bundled local server
+3. **[CLI](./scripts/)** — native binary on macOS, Linux, and Windows (no Node required)
+4. **[Agent skill](./skills/idomoo/)** — a `SKILL.md` that teaches Claude Code, Cursor, Copilot, etc. to drive the CLI in plain English
+
+👉 **Full install guide: https://djtoon.github.io/idomoo/**
+
+---
+
+## Quick start
+
+### Option A — Claude Desktop (one-click)
+
+Download and double-click: **https://github.com/djtoon/idomoo/releases/latest/download/idomoo.mcpb**
+
+Claude Desktop opens an install dialog, asks for your Account ID + API Key, and you're done. Try: *"Create a 30-second promo video for a coffee shop."*
+
+### Option B — CLI
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/djtoon/idomoo/main/scripts/install.sh | bash
@@ -8,11 +27,13 @@ idomoo login
 idomoo create -p "Promote our summer sale" -t "Summer Sale"
 ```
 
-👉 Full install page: **https://djtoon.github.io/idomoo/**
+### Option C — MCP in Cursor / Claude Code
+
+See [`mcpb/README.md`](./mcpb/README.md) for manual MCP server setup.
 
 ---
 
-## Install
+## Install (full options)
 
 ### Native (recommended — no Node.js required) ⭐
 
