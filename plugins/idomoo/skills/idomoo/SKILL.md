@@ -177,6 +177,25 @@ Render the final AI video from a blueprint. Required: `-b, --blueprint-id`. Opti
 ### `idomoo video get <ai_video_id>`
 Fetch an AI video by ID. When the status reaches `Done`, the response contains `video_url`.
 
+### `idomoo brand create -n "..." [options]`
+Create a brand for styling/voice/logo used in videos. Required: `-n, --name`. Optional:
+- `--logo-url <url>` — brand logo URL
+- `--colors <rgb>` — brand color (up to 4, repeatable — e.g. `--colors "rgb(255,87,51)" --colors "rgb(46,134,171)"`)
+- `--fonts <url>` — Google Fonts or direct font file URL (repeatable)
+- `--use-stock-footage` — allow Getty stock footage
+- `--reference-image-url <url>` — reference image for AI image generation
+- `--tone-of-voice <text>` — narrator tone
+- `--tone-instruction <text>` — custom tone instructions
+- `--pronunciation-dictionary <json>` — JSON map of words→pronunciations
+
+Returns a `BrandResponse` with an `id` you can pass to brief/blueprint/video via `--brand-id`.
+
+### `idomoo brand get <brand_id>`
+Fetch a brand by ID.
+
+### `idomoo brand update <brand_id> [options]`
+Partially update brand fields. Accepts the same optional flags as `brand create` — only the fields you pass are changed.
+
 ### `idomoo create -p "..." [options]`
 End-to-end shortcut that does brief → blueprint → ai-video with polling between each step. Accepts the union of all the flags above. Recommended starting point for one-off video generation.
 

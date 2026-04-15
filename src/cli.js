@@ -6,6 +6,7 @@ const { showConfig, setConfig, resetConfig } = require('./commands/config');
 const { briefCreate, briefGet } = require('./commands/brief');
 const { blueprintCreate, blueprintGet } = require('./commands/blueprint');
 const { videoCreate, videoGet } = require('./commands/video');
+const { brandCreate, brandGet, brandUpdate } = require('./commands/brand');
 const { createVideo } = require('./commands/create');
 const { IdomooError } = require('./client');
 
@@ -116,6 +117,39 @@ function build() {
     .command('get <ai_video_id>')
     .description('Fetch an AI video by ID (also used to poll status)')
     .action((id) => videoGet(id));
+
+  // ---- brand ----
+  const brandCmd = program.command('brand').description('Manage brands');
+  brandCmd
+    .command('create')
+    .description('Create a new brand')
+    .requiredOption('-n, --name <text>', 'Brand name')
+    .option('--logo-url <url>', 'URL to the brand logo')
+    .option('--colors <rgb>', 'Brand color in rgb() format — repeat for up to 4 colors', collect, [])
+    .option('--fonts <url>', 'Font URL (Google Fonts or direct file) — repeatable', collect, [])
+    .option('--use-stock-footage', 'Allow Getty stock footage in videos using this brand')
+    .option('--reference-image-url <url>', 'Reference image URL for AI image generation')
+    .option('--tone-of-voice <text>', 'Tone of voice for narration')
+    .option('--tone-instruction <text>', 'Custom tone-of-voice instructions')
+    .option('--pronunciation-dictionary <json>', 'JSON object mapping words to pronunciations')
+    .action((opts) => brandCreate(opts));
+  brandCmd
+    .command('get <brand_id>')
+    .description('Fetch a brand by ID')
+    .action((id) => brandGet(id));
+  brandCmd
+    .command('update <brand_id>')
+    .description('Update brand fields (only provided fields are changed)')
+    .option('-n, --name <text>', 'Brand name')
+    .option('--logo-url <url>', 'URL to the brand logo')
+    .option('--colors <rgb>', 'Brand color in rgb() format — repeat for up to 4 colors', collect, [])
+    .option('--fonts <url>', 'Font URL — repeatable', collect, [])
+    .option('--use-stock-footage', 'Allow Getty stock footage')
+    .option('--reference-image-url <url>', 'Reference image URL')
+    .option('--tone-of-voice <text>', 'Tone of voice for narration')
+    .option('--tone-instruction <text>', 'Custom tone-of-voice instructions')
+    .option('--pronunciation-dictionary <json>', 'JSON object mapping words to pronunciations')
+    .action((id, opts) => brandUpdate(id, opts));
 
   // ---- one-shot end-to-end ----
   program

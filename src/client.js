@@ -144,6 +144,17 @@ class IdomooClient {
   getAiVideo(id) {
     return this.request('GET', `/ai-video/${encodeURIComponent(id)}`);
   }
+
+  // ---- Brand ----
+  createBrand(payload) {
+    return this.request('POST', '/brands', { body: payload });
+  }
+  getBrand(id) {
+    return this.request('GET', `/brands/${encodeURIComponent(id)}`);
+  }
+  updateBrand(id, payload) {
+    return this.request('PUT', `/brands/${encodeURIComponent(id)}`, { body: payload });
+  }
 }
 
 // Poll a getter function until its Status field leaves "In process"/"Waiting for a file".
