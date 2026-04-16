@@ -28,7 +28,7 @@ if (!LUCAS_MCP_KEY) {
 
 async function main() {
   const upstream = new Client(
-    { name: "idomoo-mcpb-proxy", version: "0.3.1" },
+    { name: "idomoo-mcpb-proxy", version: "0.3.2" },
     { capabilities: {} }
   );
 
@@ -41,7 +41,7 @@ async function main() {
   await upstream.connect(transport);
 
   const server = new Server(
-    { name: "idomoo", version: "0.3.1" },
+    { name: "idomoo", version: "0.3.2" },
     { capabilities: { tools: {} } }
   );
 

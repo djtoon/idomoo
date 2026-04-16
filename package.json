@@ -1,6 +1,6 @@
 {
   "name": "idomoo-cli",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Command-line tool for the Idomoo AI Video Generation API (Lucas).",
   "bin": {
     "idomoo": "bin/idomoo.js"
