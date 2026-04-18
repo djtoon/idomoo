@@ -1,6 +1,6 @@
 {
-  "name": "idomoo",
-  "description": "Claude Code plugin that teaches Claude how to use the Idomoo AI Video Generation CLI (Lucas) to create, manage, and render AI videos end-to-end.",
+  "name": "idomoo-mcp",
+  "description": "Claude Code plugin that wires up Idomoo's hosted Lucas MCP server and teaches Claude the interactive brief → blueprint → video flow. No local CLI required.",
   "version": "0.3.3",
   "author": {
     "name": "Idomoo"
@@ -11,7 +11,7 @@
     "lucas",
     "ai-video",
     "video-generation",
-    "cli"
+    "mcp"
   ],
   "license": "MIT"
 }

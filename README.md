@@ -274,12 +274,24 @@ This package ships with an **Agent Skill** — a `SKILL.md` instruction file tha
 npx skills add djtoon/idomoo
 ```
 
-**As a Claude Code plugin:**
+**As a Claude Code plugin — pick one:**
 
 ```text
-/plugin marketplace add djtoon/idomoo
+# Register the marketplace (use the full URL so it works on Claude Code
+# terminal *and* Claude.ai Code / cowork). The shorthand djtoon/idomoo also
+# works on the CLI.
+/plugin marketplace add https://github.com/djtoon/idomoo
+
+# Option 1: CLI plugin (requires the idomoo binary on PATH)
 /plugin install idomoo@idomoo
+
+# Option 2: MCP plugin (hosted Lucas MCP — no local install)
+#   Set LUCAS_MCP_KEY in your environment first.
+/plugin install idomoo-mcp@idomoo
 ```
+
+- `idomoo` — drives the local [`idomoo`](#install) CLI. Full brand / brief / blueprint / video coverage.
+- `idomoo-mcp` — registers Idomoo's hosted Lucas MCP (`https://lucas-mcp.idomoo.ai/mcp`) and bundles the matching interactive-flow skill. Exposes the 6 official Lucas tools. Reads the `LUCAS_MCP_KEY` env var for auth.
 
 **Or just paste this to your coding assistant:**
 

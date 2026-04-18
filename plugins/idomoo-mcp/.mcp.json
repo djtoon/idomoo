@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "lucas": {
+      "type": "http",
+      "url": "https://lucas-mcp.idomoo.ai/mcp",
+      "headers": {
+        "X-Lucas-MCP-Key": "${LUCAS_MCP_KEY}"
+      }
+    }
+  }
+}

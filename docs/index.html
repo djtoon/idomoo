@@ -573,16 +573,32 @@
       <div class="tab-panel" data-panel="skill-plugin">
         <div class="codeblock">
           <div class="codeblock-head">
-            <span class="codeblock-label"><span class="dot"></span> claude code</span>
-            <button class="copy-btn" onclick="copy(this,'/plugin marketplace add djtoon/idomoo\n/plugin install idomoo@idomoo')">Copy</button>
+            <span class="codeblock-label"><span class="dot"></span> claude code — CLI plugin (local idomoo binary)</span>
+            <button class="copy-btn" onclick="copy(this,'/plugin marketplace add https://github.com/djtoon/idomoo\n/plugin install idomoo@idomoo')">Copy</button>
           </div>
-          <pre><code><span class="cmt"># 1. register the marketplace</span>
-<span class="kw">/plugin</span> marketplace add djtoon/idomoo
+          <pre><code><span class="cmt"># 1. register the marketplace (full URL works on CLI *and* Claude.ai Code / cowork)</span>
+<span class="kw">/plugin</span> marketplace add https://github.com/djtoon/idomoo
 
-<span class="cmt"># 2. install the plugin</span>
+<span class="cmt"># 2. install the CLI plugin (requires idomoo on PATH)</span>
 <span class="kw">/plugin</span> install idomoo@idomoo</code></pre>
         </div>
-        <p class="post-code-note">The fastest path for Claude Code users — marketplace + plugin in two commands. Claude auto-invokes the skill whenever you mention Idomoo or AI video.</p>
+        <p class="post-code-note" style="margin-bottom:14px;">For users who have the <code>idomoo</code> CLI installed locally. Ships the full brand → brief → blueprint → video skill.</p>
+
+        <div class="codeblock">
+          <div class="codeblock-head">
+            <span class="codeblock-label"><span class="dot"></span> claude code / cowork — MCP plugin (hosted Lucas MCP)</span>
+            <button class="copy-btn" onclick="copy(this,'/plugin marketplace add https://github.com/djtoon/idomoo\n/plugin install idomoo-mcp@idomoo')">Copy</button>
+          </div>
+          <pre><code><span class="cmt"># 1. set your Lucas MCP key in the environment that launches Claude</span>
+<span class="cmd">export</span> LUCAS_MCP_KEY=<span class="str">"your_mcp_key"</span>
+
+<span class="cmt"># 2. register the marketplace (full URL works on CLI *and* Claude.ai Code / cowork)</span>
+<span class="kw">/plugin</span> marketplace add https://github.com/djtoon/idomoo
+
+<span class="cmt"># 3. install the MCP plugin — auto-registers lucas-mcp.idomoo.ai/mcp</span>
+<span class="kw">/plugin</span> install idomoo-mcp@idomoo</code></pre>
+        </div>
+        <p class="post-code-note">No local install required — works in Claude Code terminal and Claude.ai Code (cowork). The plugin registers the hosted Lucas MCP server (with your <code>X-Lucas-MCP-Key</code> header) and bundles the matching interactive-flow skill so Claude drives the 6 Lucas tools correctly.</p>
       </div>
 
       <!-- Manual — Mac/Linux -->

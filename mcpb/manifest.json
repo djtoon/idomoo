@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "idomoo",
   "display_name": "Idomoo Lucas MCP",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Proxy to the hosted Idomoo Lucas MCP server. Create AI videos end-to-end (brief → blueprint → video) from Claude Desktop.",
   "long_description": "Thin Node.js stdio proxy that forwards MCP traffic to Idomoo's hosted Lucas MCP server at https://lucas-mcp.idomoo.ai/mcp. Exposes the 6 official Lucas tools: create_brief, get_brief, create_blueprint, get_blueprint, create_video, get_video.",
   "author": {
