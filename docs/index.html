@@ -436,36 +436,14 @@
       </div>
 
       <div class="tab-panel" data-panel="mcp-cowork">
-        <div style="padding:18px 20px; background:var(--bg-panel); border:1px solid var(--border); border-radius:12px; margin-bottom:14px;">
-          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-            <span style="font-size:11px; font-weight:700; letter-spacing:0.14em; color:var(--accent); text-transform:uppercase;">Recommended · plugin install</span>
-          </div>
-          <p style="font-size:14px; color:var(--text-dim); line-height:1.6; margin-bottom:14px;">
-            Claude.ai Code (cowork) installs the Lucas MCP via the <code>idomoo-mcp</code> plugin. The plugin registers <code>https://lucas-mcp.idomoo.ai/mcp</code> and bundles the matching interactive-flow skill so Claude drives all 6 Lucas tools correctly — no manual JSON needed.
-          </p>
-        </div>
-
         <div class="codeblock">
           <div class="codeblock-head">
-            <span class="codeblock-label"><span class="dot"></span> claude cowork — in-chat commands</span>
-            <button class="copy-btn" onclick="copy(this,'/plugin marketplace add https://github.com/djtoon/idomoo\n/plugin install idomoo-mcp@idomoo')">Copy</button>
+            <span class="codeblock-label"><span class="dot"></span> marketplace URL</span>
+            <button class="copy-btn" onclick="copy(this,'https://github.com/djtoon/idomoo')">Copy</button>
           </div>
-          <pre><code><span class="cmt"># 1. register the marketplace (full URL is required on the web)</span>
-<span class="kw">/plugin</span> marketplace add https://github.com/djtoon/idomoo
-
-<span class="cmt"># 2. install the MCP plugin — auto-registers lucas-mcp.idomoo.ai/mcp</span>
-<span class="kw">/plugin</span> install idomoo-mcp@idomoo</code></pre>
+          <pre><code>https://github.com/djtoon/idomoo</code></pre>
         </div>
-        <p class="post-code-note" style="margin-bottom:14px;">Run both commands in any Claude.ai Code session. The plugin's <code>.mcp.json</code> references <code>${LUCAS_MCP_KEY}</code>, so set that env var in your cowork environment settings.</p>
-
-        <div class="codeblock">
-          <div class="codeblock-head">
-            <span class="codeblock-label"><span class="dot"></span> cowork environment variable</span>
-            <button class="copy-btn" onclick="copy(this,'LUCAS_MCP_KEY=your_mcp_key')">Copy</button>
-          </div>
-          <pre><code><span class="kw">LUCAS_MCP_KEY</span>=<span class="str">your_mcp_key</span></code></pre>
-        </div>
-        <p class="post-code-note">Add this to the cowork environment's variables panel so the plugin can inject the <code>X-Lucas-MCP-Key</code> header on every MCP call. Without it the plugin will fail at first tool call.</p>
+        <p class="post-code-note">Paste into Claude.ai Code's plugin marketplace, then install <code>idomoo-mcp</code>. Set <code>LUCAS_MCP_KEY</code> in the cowork environment variables so the plugin can send the <code>X-Lucas-MCP-Key</code> header.</p>
       </div>
 
       <div class="tab-panel" data-panel="mcp-cursor">
