@@ -1,7 +1,7 @@
 {
   "name": "idomoo-mcp",
   "description": "Claude Code plugin that wires up Idomoo's hosted Lucas MCP server and teaches Claude the interactive brief → blueprint → video flow. No local CLI required.",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "author": {
     "name": "Idomoo"
   },

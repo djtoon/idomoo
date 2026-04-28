@@ -1,6 +1,6 @@
 {
   "name": "idomoo-mcpb",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "MCPB proxy to the hosted Idomoo Lucas MCP server.",
   "type": "module",
   "main": "server/index.js",

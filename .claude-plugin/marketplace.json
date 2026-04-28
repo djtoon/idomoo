@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Idomoo Claude Code plugins — AI video generation via the Idomoo / Lucas API. Pick the CLI plugin if you have the idomoo binary installed locally, or the MCP plugin to use Idomoo's hosted Lucas MCP server (no local install).",
-    "version": "0.3.3"
+    "version": "0.3.4"
   },
   "plugins": [
     {
       "name": "idomoo",
       "source": "./plugins/idomoo",
       "description": "AI video generation via the local idomoo CLI. Teaches Claude the brand → brief → blueprint → video workflow end-to-end.",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "author": {
         "name": "Idomoo"
       },
@@ -24,7 +24,7 @@
       "name": "idomoo-mcp",
       "source": "./plugins/idomoo-mcp",
       "description": "Hosted Lucas MCP integration — auto-registers https://lucas-mcp.idomoo.ai/mcp and ships the matching interactive-flow skill. Set LUCAS_MCP_KEY in your environment.",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "author": {
         "name": "Idomoo"
       },
