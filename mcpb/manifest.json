@@ -2,9 +2,9 @@
   "manifest_version": "0.3",
   "name": "idomoo",
   "display_name": "Idomoo Lucas MCP",
-  "version": "0.3.4",
-  "description": "Proxy to the hosted Idomoo Lucas MCP server. Create AI videos end-to-end (brief → blueprint → video) from Claude Desktop.",
-  "long_description": "Thin Node.js stdio proxy that forwards MCP traffic to Idomoo's hosted Lucas MCP server at https://lucas-mcp.idomoo.ai/mcp. Exposes the 6 official Lucas tools: create_brief, get_brief, create_blueprint, get_blueprint, create_video, get_video.",
+  "version": "0.3.5",
+  "description": "Proxy to the hosted Idomoo Lucas MCP server. Create AI videos end-to-end (brand → brief → blueprint → video) from Claude Desktop.",
+  "long_description": "Thin Node.js stdio proxy that forwards MCP traffic to Idomoo's hosted Lucas MCP server at https://lucas-mcp.idomoo.ai/mcp. Exposes all 11 official Lucas tools: create_brand, update_brand, create_brief, get_brief, update_brief, update_brief_by_prompt, create_blueprint, get_blueprint, update_blueprint_by_prompt, create_video, get_video.",
   "author": {
     "name": "Idomoo",
     "url": "https://idomoo.com"
@@ -27,10 +27,15 @@
     }
   },
   "tools": [
+    { "name": "create_brand", "description": "Create a brand (logo, colors, fonts, tone of voice)" },
+    { "name": "update_brand", "description": "Update an existing brand (partial — only fields you pass change)" },
     { "name": "create_brief", "description": "Create a video brief from a natural-language prompt" },
     { "name": "get_brief", "description": "Fetch a brief by ID — used to poll status" },
+    { "name": "update_brief", "description": "Structured patch — change specific brief fields directly" },
+    { "name": "update_brief_by_prompt", "description": "Edit a brief via a free-form natural-language instruction" },
     { "name": "create_blueprint", "description": "Generate a scene blueprint from a brief" },
     { "name": "get_blueprint", "description": "Fetch a blueprint by ID — used to poll status" },
+    { "name": "update_blueprint_by_prompt", "description": "Edit a blueprint via a free-form natural-language instruction" },
     { "name": "create_video", "description": "Render the final AI video from a blueprint" },
     { "name": "get_video", "description": "Fetch the AI video — video_url populates when Done" }
   ],
