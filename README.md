@@ -4,7 +4,7 @@ Three ways to use the Idomoo AI Video Generation API (Lucas) from anywhere:
 
 1. **[Lucas MCP server](https://academy.idomoo.com/support/solutions/articles/4000227306-lucas-mcp-server-integration-guide)** — connect Claude Desktop, Cursor, or Claude Code to Idomoo's hosted MCP at `https://lucas-mcp.idomoo.ai/mcp`. Pair with [`skills/idomoo-mcp/SKILL.md`](./skills/idomoo-mcp/SKILL.md) so your AI knows the right interactive flow.
 2. **[CLI](./scripts/)** — native binary on macOS, Linux, and Windows (no Node required)
-3. **[Agent skill for the CLI](./skills/idomoo/)** — a `SKILL.md` that teaches Claude Code, Cursor, Copilot, etc. to drive the CLI in plain English
+3. **[Agent skill for the CLI](./skills/idomoo/)** — a `SKILL.md` that teaches Claude Code, Cursor, Copilot, etc. to drive the CLI in plain English. No binary on hand? Use [`skills/idomoo-npx/SKILL.md`](./skills/idomoo-npx/SKILL.md) — same flow, every command runs through `npx idomoo-cli` (Node ≥ 18 only).
 
 👉 **Full install guide: https://djtoon.github.io/idomoo/**
 

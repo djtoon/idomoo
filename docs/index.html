@@ -641,6 +641,47 @@
         </div>
         <p class="post-code-note">Installs <code>SKILL.md</code> into <code>%USERPROFILE%\.claude\skills\idomoo\</code>. Restart Claude Code to pick it up.</p>
       </div>
+
+      <!-- ── No-install variant: idomoo-npx skill ───────────────────────── -->
+      <div style="margin-top:28px; padding:20px 22px; background:var(--bg-panel); border:1px solid var(--border); border-radius:12px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <span style="font-size:11px; font-weight:700; letter-spacing:0.14em; color:var(--accent); text-transform:uppercase;">No install · npm-only</span>
+        </div>
+        <h3 style="margin:0 0 6px 0; font-size:18px;">Don't have the <code>idomoo</code> binary?</h3>
+        <p style="font-size:14px; color:var(--text-dim); line-height:1.6; margin-bottom:16px;">
+          Install the <code>idomoo-npx</code> skill instead — same brand → brief → blueprint → video flow, but every command runs through <code>npx idomoo-cli ...</code>. No global install, no native binary. Requires Node.js ≥ 18.
+        </p>
+
+        <div class="codeblock" style="margin-bottom:12px;">
+          <div class="codeblock-head">
+            <span class="codeblock-label"><span class="dot"></span> Mac / Linux — install the npx skill</span>
+            <button class="copy-btn" onclick="copy(this,'mkdir -p ~/.claude/skills/idomoo-npx && curl -fsSL https://raw.githubusercontent.com/djtoon/idomoo/main/skills/idomoo-npx/SKILL.md -o ~/.claude/skills/idomoo-npx/SKILL.md')">Copy</button>
+          </div>
+          <pre><code><span class="cmd">mkdir</span> -p ~/.claude/skills/idomoo-npx
+<span class="cmd">curl</span> -fsSL https://raw.githubusercontent.com/djtoon/idomoo/main/skills/idomoo-npx/SKILL.md \
+  -o ~/.claude/skills/idomoo-npx/SKILL.md</code></pre>
+        </div>
+
+        <div class="codeblock" style="margin-bottom:12px;">
+          <div class="codeblock-head">
+            <span class="codeblock-label"><span class="dot"></span> Windows PowerShell — install the npx skill</span>
+            <button class="copy-btn" onclick="copy(this,'$dir = `&quot;$env:USERPROFILE\\.claude\\skills\\idomoo-npx`&quot;; New-Item -ItemType Directory -Path $dir -Force | Out-Null; irm https://raw.githubusercontent.com/djtoon/idomoo/main/skills/idomoo-npx/SKILL.md -OutFile `&quot;$dir\\SKILL.md`&quot;')">Copy</button>
+          </div>
+          <pre><code><span class="kw">$dir</span> = <span class="str">"$env:USERPROFILE\.claude\skills\idomoo-npx"</span>
+<span class="cmd">New-Item</span> -ItemType Directory -Path <span class="kw">$dir</span> -Force | Out-Null
+<span class="cmd">irm</span> https://raw.githubusercontent.com/djtoon/idomoo/main/skills/idomoo-npx/SKILL.md `
+    -OutFile <span class="str">"$dir\SKILL.md"</span></code></pre>
+        </div>
+
+        <div class="codeblock">
+          <div class="codeblock-head">
+            <span class="codeblock-label"><span class="dot"></span> first run — log in via npx</span>
+            <button class="copy-btn" onclick="copy(this,'npx idomoo-cli login')">Copy</button>
+          </div>
+          <pre><code><span class="cmd">npx</span> idomoo-cli login   <span class="cmt"># prompts for Account ID + API Secret Key</span></code></pre>
+        </div>
+        <p class="post-code-note" style="margin-top:12px;">After install, restart Claude Code. Try: <em>"Use the idomoo-npx skill to make a 30-second promo for a coffee shop."</em></p>
+      </div>
     </section>
 
     <!-- ═══════ FLOW 4: Agent-driven ═══════ -->
